@@ -10,6 +10,5 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:+'
-    compile 'com.pholser:junit-quickcheck-core:0.7'
-    compile 'com.pholser:junit-quickcheck-generators:0.7'
+    testCompile 'org.quicktheories:quicktheories:0.+'
 }

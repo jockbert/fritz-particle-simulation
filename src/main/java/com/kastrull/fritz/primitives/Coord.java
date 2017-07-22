@@ -51,4 +51,8 @@ public final class Coord {
 	public String toString() {
 		return "(" + x + ", " + y + ")";
 	}
+
+	public Coord mult(double z) {
+		return Coord.c(x * z, y * z);
+	}
 }

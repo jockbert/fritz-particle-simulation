@@ -1,32 +1,48 @@
 package com.kastrull.fritz.primitives;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import org.junit.runner.RunWith;
+import org.junit.Test;
+import org.quicktheories.quicktheories.WithQuickTheories;
+import org.quicktheories.quicktheories.core.Source;
 
-import com.pholser.junit.quickcheck.From;
-import com.pholser.junit.quickcheck.Property;
-import com.pholser.junit.quickcheck.runner.JUnitQuickcheck;
+public class CoordTest implements WithQuickTheories {
 
-
-@RunWith(JUnitQuickcheck.class)
-public class CoordTest {
-
-	@Property
-	public void coordCanBeCreated(double x, double y) {
-		Coord c = Coord.c(x, y);
-		assertNotNull("Coord is not null", c);
-		assertEquals(x, c.x, 0.0);
-		assertEquals(y, c.y, 0.0);
-
-	}
-	
-	@Property
-	public void canAdd(@From(CoordGen.class) Coord a,@From(CoordGen.class) Coord b) {
-		Coord actual = a.add(b);
-		Coord expected = Coord.c(a.x + b.x, a.y + b.y);
-		assertEquals(actual, expected);
+	@Test
+	public void coordCanBeCreated() {
+		qt().forAll(doubleWithInf(), doubleWithInf())
+			.check((x, y) -> {
+				Coord c = Coord.c(x, y);
+				return c != null && c.x == x && c.y == y;
+			});
 	}
 
+	@Test
+	public void canAdd() {
+		qt().forAll(coords(), coords())
+			.checkAssert((a, b) -> {
+				Coord actual = a.add(b);
+				Coord expected = Coord.c(a.x + b.x, a.y + b.y);
+				assertEquals(expected, actual);
+			});
+	}
+
+	@Test
+	public void canMult() {
+		qt().forAll(coords(), doubleWithInf())
+			.checkAssert((a, z) -> {
+				Coord actual = a.mult(z);
+				Coord expected = Coord.c(a.x * z, a.y * z);
+				assertEquals(actual, expected);
+			});
+	}
+
+	private Source<Double> doubleWithInf() {
+		return doubles().fromNegativeInfinityToPositiveInfinity();
+	}
+
+	private Source<Coord> coords() {
+		return Source.of(
+			doubleWithInf().combine(doubleWithInf(), Coord::c));
+	}
 }
