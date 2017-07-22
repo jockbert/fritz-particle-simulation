@@ -2,6 +2,8 @@ package com.kastrull.fritz.primitives;
 
 public final class Coord {
 
+	public static final Coord ZERO = c(0, 0);
+	public static final Coord UNIT = c(1, 1);
 	public final double x;
 	public final double y;
 
@@ -54,5 +56,17 @@ public final class Coord {
 
 	public Coord mult(double z) {
 		return Coord.c(x * z, y * z);
+	}
+
+	public double absSqr() {
+		return x * x + y * y;
+	}
+
+	public Coord subtract(Coord z) {
+		return c(x - z.x, y - z.y);
+	}
+
+	public boolean isFinite() {
+		return Double.isFinite(x) && Double.isFinite(y);
 	}
 }

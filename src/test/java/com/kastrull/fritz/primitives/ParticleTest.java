@@ -20,4 +20,27 @@ public class ParticleTest implements WithQtAndPrimitives {
 				assertEquals(p.vel, velocity);
 			});
 	}
+
+	@Test
+	public void subtractSelf() {
+		qt().forAll(particles())
+			.assuming(p -> p.isFinite())
+			.check(p -> p.subtract(p).equals(Particle.ZERO));
+	}
+
+	@Test
+	public void subtractZero() {
+		qt().forAll(particles())
+			.check(p -> p.subtract(Particle.ZERO).equals(p));
+	}
+
+	@Test
+	public void subtractUnit() {
+		qt().forAll(particles())
+			.check(p -> p.subtract(Particle.UNIT)
+				.equals(Particle.p(
+					p.pos.subtract(Coord.UNIT),
+					p.vel.subtract(Coord.UNIT))));
+	}
+
 }

@@ -2,6 +2,9 @@ package com.kastrull.fritz.primitives;
 
 public class Particle {
 
+	public static final Particle ZERO = p(Coord.ZERO, Coord.ZERO);
+	public static final Particle UNIT = p(Coord.UNIT, Coord.UNIT);
+
 	public final Coord pos;
 	public final Coord vel;
 
@@ -48,5 +51,17 @@ public class Particle {
 	@Override
 	public String toString() {
 		return "Particle [pos=" + pos + ", vel=" + vel + "]";
+	}
+
+	public Particle subtract(Particle z) {
+		return p(pos.subtract(z.pos), vel.subtract(z.vel));
+	}
+
+	public boolean isFinite() {
+		return pos.isFinite() && vel.isFinite();
+	}
+
+	public Particle move(Coord distance) {
+		return p(pos.add(distance), vel);
 	}
 }

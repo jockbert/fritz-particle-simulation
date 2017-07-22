@@ -1,5 +1,6 @@
 package com.kastrull.fritz.primitives;
 
+import static com.kastrull.fritz.primitives.Coord.c;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -10,8 +11,8 @@ public class CoordTest implements WithQtAndPrimitives {
 	public void canCreate() {
 		qt()
 			.forAll(
-				doubleWithInf(),
-				doubleWithInf())
+				doublesToInf(),
+				doublesToInf())
 			.check((x, y) -> {
 				Coord c = Coord.c(x, y);
 				return c != null && c.x == x && c.y == y;
@@ -36,11 +37,37 @@ public class CoordTest implements WithQtAndPrimitives {
 		qt()
 			.forAll(
 				coords(),
-				doubleWithInf())
+				doublesToInf())
 			.checkAssert((c, z) -> {
 				Coord actual = c.mult(z);
 				Coord expected = Coord.c(c.x * z, c.y * z);
 				assertEquals(actual, expected);
 			});
+	}
+
+	@Test
+	public void subtractSelf() {
+		qt().forAll(coords())
+			.assuming(c -> c.isFinite())
+			.check(c -> c.subtract(c).equals(Coord.ZERO));
+	}
+
+	@Test
+	public void subtractZero() {
+		qt().forAll(coords())
+			.check(c -> c.subtract(Coord.ZERO).equals(c));
+	}
+
+	@Test
+	public void subtractUnit() {
+		qt().forAll(coords())
+			.check(c -> c.subtract(Coord.UNIT).equals(Coord.c(c.x - 1, c.y - 1)));
+	}
+
+	@Test
+	public void absSqr() {
+		assertEquals(0, c(0, 0).absSqr(), 0);
+		assertEquals(5, c(-1, -2).absSqr(), 0);
+		assertEquals(25, c(4, 3).absSqr(), 0);
 	}
 }

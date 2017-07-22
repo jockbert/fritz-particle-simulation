@@ -5,13 +5,18 @@ import org.quicktheories.quicktheories.core.Source;
 
 public interface WithQtAndPrimitives extends WithQuickTheories {
 
-	default Source<Double> doubleWithInf() {
+	default Source<Double> doublesToInf() {
 		return doubles().fromNegativeInfinityToPositiveInfinity();
 	}
 
 	default Source<Coord> coords() {
 		return Source.of(
-			doubleWithInf().combine(doubleWithInf(), Coord::c));
+			doublesToInf().combine(doublesToInf(), Coord::c));
+	}
+
+	default Source<Particle> particles() {
+		return Source.of(
+			coords().combine(coords(), Particle::p));
 	}
 
 }
