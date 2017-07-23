@@ -1,7 +1,11 @@
 package com.kastrull.fritz.primitives;
 
+import static com.kastrull.fritz.primitives.Coord.c;
+import static com.kastrull.fritz.primitives.Particle.p;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -43,4 +47,72 @@ public class ParticleTest implements WithQtAndPrimitives {
 					p.vel.subtract(Coord.UNIT))));
 	}
 
+	@Test
+	public void yConjugate() {
+		qt()
+			.forAll(particles())
+			.check(p -> p.yConjugate().pos.equals(p.pos.yConjugate())
+					&& p.yConjugate().vel.equals(p.vel.yConjugate()));
+	}
+
+	@Test
+	public void rotate_examples() {
+		assertApprox(
+			p(c(0, 0), c(0, 0)),
+			p(c(0, 0), c(0, 0)).rotate(123456));
+
+		assertApprox(
+			p(c(-4, 1), c(2, -3)),
+			p(c(1, 4), c(-3, -2)).rotate(Math.PI / 2));
+	}
+
+	@Test
+	public void rotate_distanceIsUnchanged() {
+		qt()
+			.forAll(particles(), degrees())
+			// arithmetic problems for really small values
+			.assuming((p, deg) -> p.distance() > 1e-150)
+			.assuming((p, deg) -> p.isFinite())
+			.checkAssert(
+				(p, deg) -> assertEquals(
+					p.distance(),
+					p.rotate(deg).distance(),
+					p.distance() * Particle.EPSILON));
+	}
+
+	@Test
+	public void approxEq() {
+		double lessThanApprox = Particle.EPSILON / 10;
+		double moreThanApprox = Particle.EPSILON * 10;
+
+		Particle zero = Particle.ZERO;
+		assertApprox(zero, p(c(lessThanApprox, lessThanApprox), c(lessThanApprox, lessThanApprox)));
+
+		assertNotApprox(zero, p(c(moreThanApprox, 0), c(0, 0)));
+		assertNotApprox(zero, p(c(0, moreThanApprox), c(0, 0)));
+		assertNotApprox(zero, p(c(0, 0), c(moreThanApprox, 0)));
+		assertNotApprox(zero, p(c(0, 0), c(0, moreThanApprox)));
+	}
+
+	@Test
+	public void distance() {
+		assertEquals(0.0, p(c(0, 0), c(0, 0)).distance(), 0.0);
+		assertEquals(1.0, p(c(1, 0), c(0, 0)).distance(), 0.0);
+		assertEquals(1.0, p(c(0, 1), c(0, 0)).distance(), 0.0);
+		assertEquals(1.0, p(c(0, 0), c(1, 0)).distance(), 0.0);
+		assertEquals(1.0, p(c(0, 0), c(0, 1)).distance(), 0.0);
+		assertEquals(5.0, p(c(0, -3), c(4, 0)).distance(), 0.0);
+	}
+
+	private void assertApprox(Particle expected, Particle actual) {
+		assertTrue(
+			actual + " should be approximate equals to " + expected,
+			expected.approxEq(actual));
+	}
+
+	private void assertNotApprox(Particle expected, Particle actual) {
+		assertFalse(
+			actual + " should NOT be approximate equals to " + expected,
+			expected.approxEq(actual));
+	}
 }

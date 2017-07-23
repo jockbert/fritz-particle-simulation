@@ -4,6 +4,7 @@ public class Particle {
 
 	public static final Particle ZERO = p(Coord.ZERO, Coord.ZERO);
 	public static final Particle UNIT = p(Coord.UNIT, Coord.UNIT);
+	public static final double EPSILON = Coord.EPSILON * 2;
 
 	public final Coord pos;
 	public final Coord vel;
@@ -63,5 +64,22 @@ public class Particle {
 
 	public Particle move(Coord distance) {
 		return p(pos.add(distance), vel);
+	}
+
+	public Particle yConjugate() {
+		return p(pos.yConjugate(), vel.yConjugate());
+	}
+
+	public boolean approxEq(Particle p) {
+		return pos.approxEq(p.pos)
+				&& vel.approxEq(p.vel);
+	}
+
+	public Particle rotate(double radians) {
+		return p(pos.rotate(radians), vel.rotate(radians));
+	}
+
+	public double distance() {
+		return Math.sqrt(pos.absSqr() + vel.absSqr());
 	}
 }

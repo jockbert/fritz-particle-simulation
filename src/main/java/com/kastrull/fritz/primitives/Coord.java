@@ -1,7 +1,11 @@
 package com.kastrull.fritz.primitives;
 
+import com.kastrull.fritz.Laws;
+
 public final class Coord {
 
+	public static final double EPSILON = Laws.EPSILON * 2;
+	private static final double EPSILON_SQR = EPSILON * EPSILON;
 	public static final Coord ZERO = c(0, 0);
 	public static final Coord UNIT = c(1, 1);
 	public final double x;
@@ -59,7 +63,7 @@ public final class Coord {
 	}
 
 	public double absSqr() {
-		return x * x + y * y;
+		return (x * x) + (y * y);
 	}
 
 	public Coord subtract(Coord z) {
@@ -68,5 +72,28 @@ public final class Coord {
 
 	public boolean isFinite() {
 		return Double.isFinite(x) && Double.isFinite(y);
+	}
+
+	public Coord yConjugate() {
+		return c(x, -y);
+	}
+
+	public double abs() {
+		return Math.sqrt(absSqr());
+	}
+
+	public Coord rotate(double radians) {
+		double cos = Math.cos(radians);
+		double sin = Math.sin(radians);
+
+		Coord xRot = c(cos, sin);
+		Coord yRot = c(-sin, cos);
+
+		return xRot.mult(x).add(yRot.mult(y));
+	}
+
+	public boolean approxEq(Coord c) {
+		double DELTA_SQR = subtract(c).absSqr();
+		return -EPSILON_SQR < DELTA_SQR && DELTA_SQR < EPSILON_SQR;
 	}
 }

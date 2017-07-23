@@ -11,7 +11,7 @@ public class BorderTest implements WithQtAndPrimitives {
 	public void canCreate() {
 		qt()
 			.forAll(
-				doublesToInf(),
+				doublesWithInf(),
 				booleans().all())
 			.checkAssert((at, byX) -> {
 				Border b = Border.b(at, byX);
@@ -21,5 +21,4 @@ public class BorderTest implements WithQtAndPrimitives {
 				assertEquals(byX, b.byX);
 			});
 	}
-
 }
