@@ -82,4 +82,12 @@ public class Particle {
 	public double distance() {
 		return Math.sqrt(pos.absSqr() + vel.absSqr());
 	}
+
+	public Particle moveTime(double time) {
+		return move(vel.mult(time));
+	}
+
+	public double posDistance(Particle q) {
+		return pos.subtract(q.pos).abs();
+	}
 }

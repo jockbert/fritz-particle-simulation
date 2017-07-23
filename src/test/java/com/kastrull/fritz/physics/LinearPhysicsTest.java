@@ -76,7 +76,30 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 			.check(p -> hasCollision(phy.collisionTime(p, p.yConjugate())));
 	}
 
-	// TODO collision time distance round-trip
+	@Test
+	public void collisionTime_moveParticle_roundtrip() {
+		qt()
+			// On y-axis positive position and negative velocity.
+			.forAll(boxedParticles())
+			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
+			.assuming(p -> p.vel.y < 0)
+			.checkAssert(p1 -> {
+
+				Particle p2 = p1.yConjugate();
+
+				Optional<Double> collisionTime = phy.collisionTime(p1, p2);
+
+				assertTrue(collisionTime.isPresent());
+
+				collisionTime.ifPresent(time -> {
+					Particle q1 = p1.moveTime(time);
+					Particle q2 = p2.moveTime(time);
+
+					double distance = q1.posDistance(q2);
+					assertEquals(Laws.PARTICLE_DIAMETER, distance, 0.001);
+				});
+			});
+	}
 
 	// TODO collision interaction: preserved momentum
 
