@@ -86,10 +86,10 @@ public final class Coord {
 		double cos = Math.cos(radians);
 		double sin = Math.sin(radians);
 
-		Coord xRot = c(cos, sin);
-		Coord yRot = c(-sin, cos);
+		double xPrim = x * cos - y * sin;
+		double yPrim = x * sin + y * cos;
 
-		return xRot.mult(x).add(yRot.mult(y));
+		return c(xPrim, yPrim);
 	}
 
 	public boolean approxEq(Coord c) {

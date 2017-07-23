@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.junit.Test;
 import org.quicktheories.quicktheories.core.Source;
 
+import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WithQtAndPrimitives;
@@ -41,8 +42,6 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 		Optional<Double> actualTime = phy.collisionTime(p1, p2);
 		Double expectedTime = 2.0;
 
-		System.out.println(phy.posAtTime(p1, expectedTime));
-
 		assertTrue(actualTime.isPresent());
 		assertEquals(expectedTime, actualTime.get(), 1e-10);
 	}
@@ -57,9 +56,37 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 			.check((p, distance) -> hasNoCollision(phy.collisionTime(p, p.move(distance))));
 	}
 
-	// TODO will never collide parallel
+	@Test
+	public void collisionTime_neverCollide() {
+		qt()
+			.forAll(particlesYPositive())
+			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
+			.check(p -> hasNoCollision(
+				phy.collisionTime(p, p.yConjugate())));
+	}
 
-	// TODO will never collide diverting
+	@Test
+	public void collisionTime_alwaysCollide() {
+		qt()
+			// On y-axix positive position and negative velocity.
+			.forAll(particlesYPositive())
+			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
+			// arithmetic problems
+			.assuming(p -> p.distance() < 1e100)
+			.assuming(p -> p.vel.y > 0.1)
+			.as(p -> p(p.pos, p.vel.yConjugate()))
+			.check(p -> hasCollision(phy.collisionTime(p, p.yConjugate())));
+	}
+
+	// @Test
+	// public void testName() {
+	//
+	// Particle p1 = p(c(9.766744976152039E-19, 4.0863354001855065E15),
+	// c(2.4726533705188256E-107, -3.2410278465565236E36));
+	// Particle p2 = p1.yConjugate();
+	//
+	// Optional<Double> result = phy.collisionTime(p1, p2);
+	// }
 
 	// TODO will always collide after time 1
 
@@ -70,6 +97,12 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 	// TODO collision interaction: preserved energy
 
 	// TODO collision interaction: specific examples
+
+	// TODO collision with border
+
+	private boolean hasCollision(Optional<Double> collisionTime) {
+		return collisionTime.isPresent();
+	}
 
 	private boolean hasNoCollision(Optional<Double> collisionTime) {
 		return !collisionTime.isPresent();

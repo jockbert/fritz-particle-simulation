@@ -48,10 +48,13 @@ public class PolySolver {
 			// has problem with division by zero
 			return streamOf();
 
-		double partInSqrt = (poly.b * poly.b / poly.a - poly.c) / poly.a;
+		double partInSqrt = (poly.b / poly.a * poly.b - poly.c) / poly.a;
 		double term1 = -poly.b / poly.a;
 
-		if (partInSqrt < 0)
+		boolean partInSqrtIsNegative = partInSqrt < 0
+				|| (poly.a == Double.POSITIVE_INFINITY && poly.c > 0);
+
+		if (partInSqrtIsNegative)
 			// no real solution exists
 			return streamOf();
 		if (partInSqrt == 0)

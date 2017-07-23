@@ -28,7 +28,12 @@ public class LinearPhysics implements Physics {
 
 		Predicate<Double> isInPresentOrFuture = x -> x >= 0;
 
-		return PolySolver.findRealRoots(a, b, c).filter(isInPresentOrFuture).sorted().findFirst();
+		return PolySolver
+			.findRealRoots(a, b, c)
+			.filter(Double::isFinite) // infinite and NaN answers are unreliable
+			.filter(isInPresentOrFuture)
+			.sorted()
+			.findFirst();
 	}
 
 	@Override
