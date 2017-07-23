@@ -24,8 +24,8 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 	public void collisionTime_WithOtherParticle() {
 		qt()
 			.forAll(
-				particles(), // TODO boxed
-				particles()) // TODO boxed
+				boxedParticles(),
+				boxedParticles())
 			.checkAssert((a, b) -> {
 				Optional<Double> time = phy.collisionTime(a, b);
 				assertNotNull(time);
@@ -59,8 +59,9 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 	@Test
 	public void collisionTime_neverCollide() {
 		qt()
-			.forAll(particlesYPositive())
+			.forAll(boxedParticles())
 			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
+			.assuming(p -> p.vel.y > 0)
 			.check(p -> hasNoCollision(
 				phy.collisionTime(p, p.yConjugate())));
 	}
@@ -68,27 +69,12 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 	@Test
 	public void collisionTime_alwaysCollide() {
 		qt()
-			// On y-axix positive position and negative velocity.
-			.forAll(particlesYPositive())
+			// On y-axis positive position and negative velocity.
+			.forAll(boxedParticles())
 			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
-			// arithmetic problems
-			.assuming(p -> p.distance() < 1e100)
-			.assuming(p -> p.vel.y > 0.1)
-			.as(p -> p(p.pos, p.vel.yConjugate()))
+			.assuming(p -> p.vel.y < 0)
 			.check(p -> hasCollision(phy.collisionTime(p, p.yConjugate())));
 	}
-
-	// @Test
-	// public void testName() {
-	//
-	// Particle p1 = p(c(9.766744976152039E-19, 4.0863354001855065E15),
-	// c(2.4726533705188256E-107, -3.2410278465565236E36));
-	// Particle p2 = p1.yConjugate();
-	//
-	// Optional<Double> result = phy.collisionTime(p1, p2);
-	// }
-
-	// TODO will always collide after time 1
 
 	// TODO collision time distance round-trip
 

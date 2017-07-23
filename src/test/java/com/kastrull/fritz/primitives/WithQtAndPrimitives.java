@@ -3,6 +3,8 @@ package com.kastrull.fritz.primitives;
 import org.quicktheories.quicktheories.WithQuickTheories;
 import org.quicktheories.quicktheories.core.Source;
 
+import com.kastrull.fritz.Laws;
+
 public interface WithQtAndPrimitives extends WithQuickTheories {
 
 	default Source<Double> doublesWithInf() {
@@ -27,17 +29,21 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 			e -> (e + 4) / 8);
 	}
 
-	default Source<Coord> coordsYPositive() {
-		return Source.of(doublesWithInf()
-			.combine(doubles().fromZeroToPositiveInfinity(),
-				Coord::c));
+	default Source<Double> boxedDoubles() {
+		return doubles().fromZeroToOne().as(
+			d -> (d - 0.5) * 2 * Laws.MAX_SIZE_AND_SPEED,
+			d -> d / (2 * Laws.MAX_SIZE_AND_SPEED) + 0.5);
 	}
 
-	default Source<Particle> particlesYPositive() {
-		return Source.of(coordsYPositive()
-			.combine(coordsYPositive(),
-				(pos, vel) -> Particle.p(pos, vel)));
+	default Source<Coord> boxedCoords() {
+		return Source.of(
+			boxedDoubles().combine(boxedDoubles(), Coord::c));
+	}
 
+	default Source<Particle> boxedParticles() {
+		return Source.of(
+			boxedCoords().combine(boxedCoords(),
+				Particle::p));
 	}
 
 }
