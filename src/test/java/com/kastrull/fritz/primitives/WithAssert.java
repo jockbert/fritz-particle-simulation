@@ -2,7 +2,10 @@ package com.kastrull.fritz.primitives;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Optional;
 
 import com.kastrull.fritz.Laws;
 
@@ -46,5 +49,16 @@ public interface WithAssert {
 
 	default String messagePrefix(String msg) {
 		return (!msg.isEmpty()) ? msg + ", " : "";
+	}
+
+	default void assertApprox(double expected, Optional<Double> actual) {
+		assertNotNull(actual);
+		assertTrue(actual.isPresent());
+		assertApprox(expected, actual.get());
+	}
+
+	default void assertNone(Optional<Double> actual) {
+		assertNotNull(actual);
+		assertFalse(actual.isPresent());
 	}
 }

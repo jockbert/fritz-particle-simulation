@@ -1,5 +1,6 @@
 package com.kastrull.fritz.physics;
 
+import static com.kastrull.fritz.primitives.Border.b;
 import static com.kastrull.fritz.primitives.Coord.c;
 import static com.kastrull.fritz.primitives.Particle.p;
 import static org.junit.Assert.assertEquals;
@@ -199,7 +200,27 @@ public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
 		assertApprox(expected, actual);
 	}
 
-	// TODO collision detection with border
+	@Test
+	public void collisionTimeWall_examples() {
+
+		Border wall = b(4, Border.BY_X);
+		Coord start = c(0, 0);
+
+		Particle pos = p(start, c(1, 2));
+		Particle zero = p(start, c(0, 2));
+		Particle neg = p(start, c(-1, 2));
+		Particle slow = p(start, c(1e-100, 2));
+		Particle fast = p(start, c(1e100, -2));
+
+		assertApprox(4.0, phy.collisionTime(pos, wall));
+		assertNone(phy.collisionTime(zero, wall));
+		assertNone(phy.collisionTime(neg, wall));
+		assertApprox(4.0e100, phy.collisionTime(slow, wall));
+		assertApprox(4.0e-100, phy.collisionTime(fast, wall));
+
+		assertApprox(2.0, phy.collisionTime(pos, b(4, Border.BY_Y)));
+		assertApprox(4.0, phy.collisionTime(neg, b(-4, Border.BY_X)));
+	}
 
 	@Test
 	public void interactWall_preserveMomentum() {

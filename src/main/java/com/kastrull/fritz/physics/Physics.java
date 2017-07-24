@@ -18,4 +18,6 @@ public interface Physics {
 
 	WallInteraction interactWall(Particle p, Border wall);
 
+	Optional<Double> collisionTime(Particle p, Border wall);
+
 }

@@ -85,4 +85,16 @@ public final class LinearPhysics implements Physics {
 		}
 		return wi(newP, wallMomentum);
 	}
+
+	@Override
+	public Optional<Double> collisionTime(Particle p, Border wall) {
+
+		double velocity = wall.byX ? p.vel.x : p.vel.y;
+		double distance = wall.at - (wall.byX ? p.pos.x : p.pos.y);
+		double time = distance / velocity;
+
+		boolean isInPresentOrNearFuture = time >= 0 && Double.isFinite(time);
+
+		return isInPresentOrNearFuture ? Optional.of(time) : Optional.empty();
+	}
 }
