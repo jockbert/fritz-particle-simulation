@@ -46,4 +46,10 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 				Particle::p));
 	}
 
+	default Source<Border> boxedBorders() {
+		return Source.of(
+			booleans().all().combine(boxedDoubles(),
+				(byX, at) -> Border.b(at, byX)));
+	}
+
 }

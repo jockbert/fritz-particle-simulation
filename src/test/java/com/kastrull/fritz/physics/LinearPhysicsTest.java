@@ -202,6 +202,21 @@ public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
 	// TODO collision detection with border
 
 	@Test
+	public void interactWall_preserveMomentum() {
+		qt()
+			.forAll(
+				boxedBorders(),
+				boxedParticles())
+			.checkAssert((wall, p) -> {
+				WallInteraction wi = phy.interactWall(p, wall);
+
+				Coord momBefore = totalMomentum(p);
+				Coord momAfter = totalMomentum(wi.p).add(wi.wallMomentum);
+				assertApprox(momBefore, momAfter);
+			});
+	}
+
+	@Test
 	public void interactWall_exampleByX() {
 		Border wall = Border.b(4, Border.BY_X);
 		Particle p = p(c(0, 0), c(1, 2));
