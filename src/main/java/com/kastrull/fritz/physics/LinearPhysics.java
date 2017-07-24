@@ -1,11 +1,17 @@
 package com.kastrull.fritz.physics;
 
+import static com.kastrull.fritz.primitives.Coord.c;
+import static com.kastrull.fritz.primitives.Particle.p;
+import static com.kastrull.fritz.primitives.WallInteraction.wi;
+
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
+import com.kastrull.fritz.primitives.WallInteraction;
 
 public final class LinearPhysics implements Physics {
 
@@ -64,5 +70,19 @@ public final class LinearPhysics implements Physics {
 		Coord collision = before1.pos.subtract(before2.pos);
 		double length = collision.abs();
 		return collision.mult(1 / length);
+	}
+
+	@Override
+	public WallInteraction interactWall(Particle p, Border wall) {
+		Coord wallMomentum;
+		Particle newP;
+		if (wall.byX) {
+			wallMomentum = c(p.vel.x * 2, 0.0);
+			newP = p(p.pos, p.vel.xConjugate());
+		} else {
+			wallMomentum = c(0.0, p.vel.y * 2);
+			newP = p(p.pos, p.vel.yConjugate());
+		}
+		return wi(newP, wallMomentum);
 	}
 }

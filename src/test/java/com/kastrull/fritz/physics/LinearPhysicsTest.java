@@ -13,9 +13,11 @@ import org.junit.Test;
 import org.quicktheories.quicktheories.core.Source;
 
 import com.kastrull.fritz.Laws;
+import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
+import com.kastrull.fritz.primitives.WallInteraction;
 import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 
 public class LinearPhysicsTest implements WithQtAndPrimitives {
@@ -204,7 +206,49 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 		assertTrue(expected.approxEq(actual));
 	}
 
-	// TODO collision with border
+	// TODO collision detection with border
+
+	@Test
+	public void interactWall_exampleByX() {
+		Border wall = Border.b(4, Border.BY_X);
+		Particle p = p(c(0, 0), c(1, 2));
+
+		Particle expectedP = p(c(0, 0), c(-1, 2));
+		Coord expectedMom = c(2, 0);
+
+		WallInteraction wi = phy.interactWall(p, wall);
+		Particle actualP = wi.p;
+		Coord actualMom = wi.wallMomentum;
+
+		assertTrue(
+			expectedP + " ~= " + actualP,
+			expectedP.approxEq(actualP));
+
+		assertTrue(
+			expectedMom + " ~= " + actualMom,
+			expectedMom.approxEq(actualMom));
+	}
+
+	@Test
+	public void interactWall_exampleByY() {
+		Border wall = Border.b(4, Border.BY_Y);
+		Particle p = p(c(0, 0), c(1, 2));
+
+		Particle expectedP = p(c(0, 0), c(1, -2));
+		Coord expectedMom = c(0, 4);
+
+		WallInteraction wi = phy.interactWall(p, wall);
+		Particle actualP = wi.p;
+		Coord actualMom = wi.wallMomentum;
+
+		assertTrue(
+			expectedP + " ~= " + actualP,
+			expectedP.approxEq(actualP));
+
+		assertTrue(
+			expectedMom + " ~= " + actualMom,
+			expectedMom.approxEq(actualMom));
+	}
 
 	private boolean hasCollision(Optional<Double> collisionTime) {
 		return collisionTime.isPresent();

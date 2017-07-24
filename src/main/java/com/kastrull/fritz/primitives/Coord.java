@@ -78,6 +78,10 @@ public final class Coord {
 		return c(x, -y);
 	}
 
+	public Coord xConjugate() {
+		return c(-x, y);
+	}
+
 	public double abs() {
 		return Math.sqrt(absSqr());
 	}
@@ -104,4 +108,5 @@ public final class Coord {
 	public Coord negate() {
 		return c(-x, -y);
 	}
+
 }
