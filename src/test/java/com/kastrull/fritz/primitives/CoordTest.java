@@ -8,67 +8,67 @@ import org.junit.Test;
 public class CoordTest implements WithQtAndPrimitives, WithAssert {
 
 	@Test
-	public void canCreate() {
+	public void create() {
 		qt()
 			.forAll(
 				doublesWithInf(),
 				doublesWithInf())
 			.check((x, y) -> {
-				Coord c = Coord.c(x, y);
+				Coord c = c(x, y);
 				return c != null && c.x == x && c.y == y;
 			});
 	}
 
 	@Test
-	public void canAdd() {
+	public void add() {
 		qt()
 			.forAll(
 				coords(),
 				coords())
 			.checkAssert((a, b) -> {
 				Coord actual = a.add(b);
-				Coord expected = Coord.c(a.x + b.x, a.y + b.y);
+				Coord expected = c(a.x + b.x, a.y + b.y);
 				assertEquals(expected, actual);
 			});
 	}
 
 	@Test
-	public void canMult() {
+	public void mult() {
 		qt()
 			.forAll(
 				coords(),
 				doublesWithInf())
 			.checkAssert((c, z) -> {
 				Coord actual = c.mult(z);
-				Coord expected = Coord.c(c.x * z, c.y * z);
+				Coord expected = c(c.x * z, c.y * z);
 				assertEquals(actual, expected);
 			});
 	}
 
 	@Test
-	public void subtractSelf() {
+	public void subtract_self() {
 		qt().forAll(coords())
 			.assuming(c -> c.isFinite())
 			.check(c -> c.subtract(c).equals(Coord.ZERO));
 	}
 
 	@Test
-	public void subtractZero() {
+	public void subtract_zero() {
 		qt().forAll(coords())
 			.check(c -> c.subtract(Coord.ZERO).equals(c));
 	}
 
 	@Test
-	public void subtractUnit() {
+	public void subtract_unit() {
 		qt().forAll(coords())
 			.check(c -> c.subtract(Coord.UNIT).equals(Coord.c(c.x - 1, c.y - 1)));
 	}
 
 	@Test
-	public void absSqr() {
-		assertExact(0, c(0, 0).absSqr());
-		assertExact(5, c(-1, -2).absSqr());
-		assertExact(25, c(4, 3).absSqr());
+	public void distanceAbsSqr() {
+		assertExact(0, c(0, 0).distansSqr());
+		assertExact(5, c(-1, -2).distansSqr());
+		assertExact(25, c(4, 3).distansSqr());
 	}
 
 	@Test
@@ -77,11 +77,11 @@ public class CoordTest implements WithQtAndPrimitives, WithAssert {
 	}
 
 	@Test
-	public void abs() {
-		assertExact(0.0, c(0, 0).abs());
-		assertExact(1.0, c(-1, 0).abs());
-		assertExact(2.0, c(0, 2).abs());
-		assertExact(5.0, c(3, -4).abs());
+	public void distance() {
+		assertExact(0.0, c(0, 0).distance());
+		assertExact(1.0, c(-1, 0).distance());
+		assertExact(2.0, c(0, 2).distance());
+		assertExact(5.0, c(3, -4).distance());
 	}
 
 	@Test
@@ -101,13 +101,13 @@ public class CoordTest implements WithQtAndPrimitives, WithAssert {
 		qt()
 			.forAll(coords(), degrees())
 			// arithmetic problems for really small values
-			.assuming((c, deg) -> c.abs() > 1e-150)
+			.assuming((c, deg) -> c.distance() > 1e-150)
 			.assuming((c, deg) -> c.isFinite())
 			.checkAssert(
 				(c, deg) -> assertEquals(
-					c.abs(),
-					c.rotate(deg).abs(),
-					c.abs() * Coord.EPSILON));
+					c.distance(),
+					c.rotate(deg).distance(),
+					c.distance() * Coord.EPSILON));
 	}
 
 	@Test

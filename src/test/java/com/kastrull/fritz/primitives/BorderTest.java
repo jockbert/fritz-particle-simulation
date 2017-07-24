@@ -8,7 +8,7 @@ import org.junit.Test;
 public class BorderTest implements WithQtAndPrimitives {
 
 	@Test
-	public void canCreate() {
+	public void create() {
 		qt()
 			.forAll(
 				doublesWithInf(),

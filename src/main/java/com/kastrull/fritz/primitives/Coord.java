@@ -62,7 +62,7 @@ public final class Coord implements Approx<Coord> {
 		return Coord.c(x * z, y * z);
 	}
 
-	public double absSqr() {
+	public double distansSqr() {
 		return (x * x) + (y * y);
 	}
 
@@ -82,8 +82,8 @@ public final class Coord implements Approx<Coord> {
 		return c(-x, y);
 	}
 
-	public double abs() {
-		return Math.sqrt(absSqr());
+	public double distance() {
+		return Math.sqrt(distansSqr());
 	}
 
 	public Coord rotate(double radians) {
@@ -98,7 +98,7 @@ public final class Coord implements Approx<Coord> {
 
 	@Override
 	public boolean approxEq(Coord c) {
-		double DELTA_SQR = subtract(c).absSqr();
+		double DELTA_SQR = subtract(c).distansSqr();
 		return -EPSILON_SQR < DELTA_SQR && DELTA_SQR < EPSILON_SQR;
 	}
 

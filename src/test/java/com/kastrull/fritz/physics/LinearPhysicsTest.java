@@ -101,7 +101,7 @@ public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
 					Particle q1 = p1.moveTime(time);
 					Particle q2 = p2.moveTime(time);
 
-					double distance = q1.posDistance(q2);
+					double distance = q1.distancePos(q2);
 					assertEquals(Laws.PARTICLE_DIAMETER, distance, 0.001);
 				});
 			});

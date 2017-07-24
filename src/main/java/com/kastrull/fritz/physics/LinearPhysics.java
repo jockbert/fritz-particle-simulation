@@ -29,9 +29,9 @@ public final class LinearPhysics implements Physics {
 
 		Particle diff = p1.subtract(p2);
 
-		double a = diff.vel.absSqr();
+		double a = diff.vel.distansSqr();
 		double b = diff.pos.x * diff.vel.x + diff.pos.y * diff.vel.y;
-		double c = diff.pos.absSqr() - 4;
+		double c = diff.pos.distansSqr() - 4;
 
 		Predicate<Double> isInPresentOrFuture = x -> x >= 0;
 
@@ -68,7 +68,7 @@ public final class LinearPhysics implements Physics {
 
 	private Coord unitCollisionVector(Particle before1, Particle before2) {
 		Coord collision = before1.pos.subtract(before2.pos);
-		double length = collision.abs();
+		double length = collision.distance();
 		return collision.mult(1 / length);
 	}
 

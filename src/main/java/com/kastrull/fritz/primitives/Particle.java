@@ -80,16 +80,16 @@ public class Particle implements Approx<Particle> {
 		return p(pos.rotate(radians), vel.rotate(radians));
 	}
 
-	public double distance() {
-		return Math.sqrt(pos.absSqr() + vel.absSqr());
+	public double distanceAbs() {
+		return Math.sqrt(pos.distansSqr() + vel.distansSqr());
 	}
 
 	public Particle moveTime(double time) {
 		return move(vel.mult(time));
 	}
 
-	public double posDistance(Particle q) {
-		return pos.subtract(q.pos).abs();
+	public double distancePos(Particle q) {
+		return pos.subtract(q.pos).distance();
 	}
 
 	public Particle addVelocity(Coord velocityChange) {
