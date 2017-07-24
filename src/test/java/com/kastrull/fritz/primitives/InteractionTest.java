@@ -3,12 +3,10 @@ package com.kastrull.fritz.primitives;
 import static com.kastrull.fritz.primitives.Coord.c;
 import static com.kastrull.fritz.primitives.Interaction.i;
 import static com.kastrull.fritz.primitives.Particle.p;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class InteractionTest implements WithQtAndPrimitives {
+public class InteractionTest implements WithQtAndPrimitives, WithAssert {
 
 	@Test
 	public void approxEquals() {
@@ -22,8 +20,8 @@ public class InteractionTest implements WithQtAndPrimitives {
 
 		Interaction i0 = i(p0, p0);
 
-		assertTrue(i0.approxEq(i(ps, ps)));
-		assertFalse(i0.approxEq(i(p0, pl)));
-		assertFalse(i0.approxEq(i(pl, p0)));
+		assertApprox(i0, i(ps, ps));
+		assertNotApprox(i0, i(p0, pl));
+		assertNotApprox(i0, i(pl, p0));
 	}
 }

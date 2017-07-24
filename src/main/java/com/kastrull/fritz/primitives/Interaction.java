@@ -1,6 +1,6 @@
 package com.kastrull.fritz.primitives;
 
-public class Interaction {
+public class Interaction implements Approx<Interaction> {
 
 	public final Particle p1;
 	public final Particle p2;
@@ -50,6 +50,7 @@ public class Interaction {
 		return "Interaction [p1=" + p1 + ", p2=" + p2 + "]";
 	}
 
+	@Override
 	public boolean approxEq(Interaction other) {
 		return p1.approxEq(other.p1) && p2.approxEq(other.p2);
 	}

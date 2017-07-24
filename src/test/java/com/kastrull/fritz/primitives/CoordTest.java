@@ -2,12 +2,10 @@ package com.kastrull.fritz.primitives;
 
 import static com.kastrull.fritz.primitives.Coord.c;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class CoordTest implements WithQtAndPrimitives {
+public class CoordTest implements WithQtAndPrimitives, WithAssert {
 
 	@Test
 	public void canCreate() {
@@ -68,9 +66,9 @@ public class CoordTest implements WithQtAndPrimitives {
 
 	@Test
 	public void absSqr() {
-		assertEquals(0, c(0, 0).absSqr(), 0);
-		assertEquals(5, c(-1, -2).absSqr(), 0);
-		assertEquals(25, c(4, 3).absSqr(), 0);
+		assertExact(0, c(0, 0).absSqr());
+		assertExact(5, c(-1, -2).absSqr());
+		assertExact(25, c(4, 3).absSqr());
 	}
 
 	@Test
@@ -80,10 +78,10 @@ public class CoordTest implements WithQtAndPrimitives {
 
 	@Test
 	public void abs() {
-		assertEquals(0.0, c(0, 0).abs(), 0.0);
-		assertEquals(1.0, c(-1, 0).abs(), 0.0);
-		assertEquals(2.0, c(0, 2).abs(), 0.0);
-		assertEquals(5.0, c(3, -4).abs(), 0.0);
+		assertExact(0.0, c(0, 0).abs());
+		assertExact(1.0, c(-1, 0).abs());
+		assertExact(2.0, c(0, 2).abs());
+		assertExact(5.0, c(3, -4).abs());
 	}
 
 	@Test
@@ -118,17 +116,5 @@ public class CoordTest implements WithQtAndPrimitives {
 		double moreThanApprox = Coord.EPSILON * 10;
 		assertApprox(c(0, 0), c(lessThanApprox, lessThanApprox));
 		assertNotApprox(c(0, 0), c(moreThanApprox, moreThanApprox));
-	}
-
-	private void assertApprox(Coord c1, Coord c2) {
-		assertTrue(
-			c1 + " should be approximate equals to " + c2,
-			c1.approxEq(c2));
-	}
-
-	private void assertNotApprox(Coord c1, Coord c2) {
-		assertFalse(
-			c1 + " should NOT be approximate equals to " + c2,
-			c1.approxEq(c2));
 	}
 }

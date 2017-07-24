@@ -2,7 +2,7 @@ package com.kastrull.fritz.primitives;
 
 import com.kastrull.fritz.Laws;
 
-public final class Coord {
+public final class Coord implements Approx<Coord> {
 
 	public static final double EPSILON = Laws.EPSILON * 2;
 	private static final double EPSILON_SQR = EPSILON * EPSILON;
@@ -96,6 +96,7 @@ public final class Coord {
 		return c(xPrim, yPrim);
 	}
 
+	@Override
 	public boolean approxEq(Coord c) {
 		double DELTA_SQR = subtract(c).absSqr();
 		return -EPSILON_SQR < DELTA_SQR && DELTA_SQR < EPSILON_SQR;

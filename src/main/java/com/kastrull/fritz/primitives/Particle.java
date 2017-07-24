@@ -1,6 +1,6 @@
 package com.kastrull.fritz.primitives;
 
-public class Particle {
+public class Particle implements Approx<Particle> {
 
 	public static final Particle ZERO = p(Coord.ZERO, Coord.ZERO);
 	public static final Particle UNIT = p(Coord.UNIT, Coord.UNIT);
@@ -70,6 +70,7 @@ public class Particle {
 		return p(pos.yConjugate(), vel.yConjugate());
 	}
 
+	@Override
 	public boolean approxEq(Particle p) {
 		return pos.approxEq(p.pos)
 				&& vel.approxEq(p.vel);

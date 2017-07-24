@@ -3,13 +3,11 @@ package com.kastrull.fritz.primitives;
 import static com.kastrull.fritz.primitives.Coord.c;
 import static com.kastrull.fritz.primitives.Particle.p;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class ParticleTest implements WithQtAndPrimitives {
+public class ParticleTest implements WithQtAndPrimitives, WithAssert {
 
 	@Test
 	public void canCreate() throws Exception {
@@ -96,23 +94,12 @@ public class ParticleTest implements WithQtAndPrimitives {
 
 	@Test
 	public void distance() {
-		assertEquals(0.0, p(c(0, 0), c(0, 0)).distance(), 0.0);
-		assertEquals(1.0, p(c(1, 0), c(0, 0)).distance(), 0.0);
-		assertEquals(1.0, p(c(0, 1), c(0, 0)).distance(), 0.0);
-		assertEquals(1.0, p(c(0, 0), c(1, 0)).distance(), 0.0);
-		assertEquals(1.0, p(c(0, 0), c(0, 1)).distance(), 0.0);
-		assertEquals(5.0, p(c(0, -3), c(4, 0)).distance(), 0.0);
+		assertExact(0.0, p(c(0, 0), c(0, 0)).distance());
+		assertExact(1.0, p(c(1, 0), c(0, 0)).distance());
+		assertExact(1.0, p(c(0, 1), c(0, 0)).distance());
+		assertExact(1.0, p(c(0, 0), c(1, 0)).distance());
+		assertExact(1.0, p(c(0, 0), c(0, 1)).distance());
+		assertExact(5.0, p(c(0, -3), c(4, 0)).distance());
 	}
 
-	private void assertApprox(Particle expected, Particle actual) {
-		assertTrue(
-			actual + " should be approximate equals to " + expected,
-			expected.approxEq(actual));
-	}
-
-	private void assertNotApprox(Particle expected, Particle actual) {
-		assertFalse(
-			actual + " should NOT be approximate equals to " + expected,
-			expected.approxEq(actual));
-	}
 }

@@ -14,7 +14,6 @@ public class Border {
 	}
 
 	public static Border b(double at, boolean byX) {
-		// TODO Auto-generated method stub
 		return new Border(at, byX);
 	}
 }

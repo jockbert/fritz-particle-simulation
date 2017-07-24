@@ -18,9 +18,10 @@ import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WallInteraction;
+import com.kastrull.fritz.primitives.WithAssert;
 import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 
-public class LinearPhysicsTest implements WithQtAndPrimitives {
+public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
 
 	Physics phy = new LinearPhysics();
 
@@ -47,7 +48,7 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 		Double expectedTime = 2.0;
 
 		assertTrue(actualTime.isPresent());
-		assertEquals(expectedTime, actualTime.get(), 1e-10);
+		assertApprox(expectedTime, actualTime.get());
 	}
 
 	@Test
@@ -117,11 +118,7 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 				double energyBefore = totalEnergy(p, q);
 				double energyAfter = totalEnergy(i.p1, i.p2);
 
-				assertEquals(
-					energyBefore + " ~= " + energyAfter,
-					energyBefore,
-					energyAfter,
-					energyBefore * Laws.EPSILON);
+				assertApprox("energy", energyBefore, energyAfter);
 			});
 	}
 
@@ -143,9 +140,7 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 				Coord momentumBefore = totalMomentum(p, q);
 				Coord momentumAfter = totalMomentum(i.p1, i.p2);
 
-				assertTrue(
-					momentumBefore + " ~= " + momentumAfter,
-					momentumBefore.approxEq(momentumAfter));
+				assertApprox("momentum", momentumBefore, momentumAfter);
 			});
 	}
 
@@ -185,7 +180,6 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 
 		assertNotNull(expected);
 		assertNotNull(actual);
-
 		assertEquals(expected, actual);
 	}
 
@@ -202,8 +196,7 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 
 		assertNotNull(expected);
 		assertNotNull(actual);
-
-		assertTrue(expected.approxEq(actual));
+		assertApprox(expected, actual);
 	}
 
 	// TODO collision detection with border
@@ -220,13 +213,8 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 		Particle actualP = wi.p;
 		Coord actualMom = wi.wallMomentum;
 
-		assertTrue(
-			expectedP + " ~= " + actualP,
-			expectedP.approxEq(actualP));
-
-		assertTrue(
-			expectedMom + " ~= " + actualMom,
-			expectedMom.approxEq(actualMom));
+		assertApprox(expectedP, actualP);
+		assertApprox(expectedMom, actualMom);
 	}
 
 	@Test
@@ -241,13 +229,8 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 		Particle actualP = wi.p;
 		Coord actualMom = wi.wallMomentum;
 
-		assertTrue(
-			expectedP + " ~= " + actualP,
-			expectedP.approxEq(actualP));
-
-		assertTrue(
-			expectedMom + " ~= " + actualMom,
-			expectedMom.approxEq(actualMom));
+		assertApprox(expectedP, actualP);
+		assertApprox(expectedMom, actualMom);
 	}
 
 	private boolean hasCollision(Optional<Double> collisionTime) {
