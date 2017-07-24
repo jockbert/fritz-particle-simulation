@@ -13,6 +13,7 @@ import org.quicktheories.quicktheories.core.Source;
 
 import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Coord;
+import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 
@@ -105,7 +106,56 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 
 	// TODO collision interaction: preserved energy
 
-	// TODO collision interaction: specific examples
+	@Test
+	public void interact_exampleHeadOnHit() {
+		Particle before1 = p(c(0, 0), c(2, 0));
+		Particle before2 = p(c(3, 0), c(0, 1));
+
+		Particle after1 = p(c(0, 0), c(0, 0));
+		Particle after2 = p(c(3, 0), c(2, 1));
+
+		Interaction expected = Interaction.i(after1, after2);
+		Interaction actual = phy.interact(before1, before2);
+
+		assertNotNull(expected);
+		assertNotNull(actual);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void interact_exampleOnlyTouch() {
+		Particle before1 = p(c(0, 0), c(2, 0));
+		Particle before2 = p(c(0, 1), c(-1, 0));
+
+		Particle after1 = p(c(0, 0), c(2, 0));
+		Particle after2 = p(c(0, 1), c(-1, 0));
+
+		Interaction expected = Interaction.i(after1, after2);
+		Interaction actual = phy.interact(before1, before2);
+
+		assertNotNull(expected);
+		assertNotNull(actual);
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void interact_examplePartialHit() {
+		Particle before1 = p(c(0, 0), c(1, 0));
+		Particle before2 = p(c(1, 1), c(0, 0));
+
+		Particle after1 = p(c(0, 0), c(0.5, -0.5));
+		Particle after2 = p(c(1, 1), c(0.5, 0.5));
+
+		Interaction expected = Interaction.i(after1, after2);
+		Interaction actual = phy.interact(before1, before2);
+
+		assertNotNull(expected);
+		assertNotNull(actual);
+
+		assertTrue(expected.approxEq(actual));
+	}
 
 	// TODO collision with border
 

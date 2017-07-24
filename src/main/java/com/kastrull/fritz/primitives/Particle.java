@@ -90,4 +90,8 @@ public class Particle {
 	public double posDistance(Particle q) {
 		return pos.subtract(q.pos).abs();
 	}
+
+	public Particle addVelocity(Coord velocityChange) {
+		return p(pos, vel.add(velocityChange));
+	}
 }

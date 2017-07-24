@@ -96,4 +96,12 @@ public final class Coord {
 		double DELTA_SQR = subtract(c).absSqr();
 		return -EPSILON_SQR < DELTA_SQR && DELTA_SQR < EPSILON_SQR;
 	}
+
+	public double dotProduct(Coord d) {
+		return x * d.x + y * d.y;
+	}
+
+	public Coord negate() {
+		return c(-x, -y);
+	}
 }

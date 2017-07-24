@@ -4,9 +4,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.kastrull.fritz.primitives.Coord;
+import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
 
-public class LinearPhysics implements Physics {
+public final class LinearPhysics implements Physics {
 
 	/**
 	 * The routine collide returns no value if there will be no collision,
@@ -39,5 +40,29 @@ public class LinearPhysics implements Physics {
 	@Override
 	public Coord posAtTime(Particle p, double time) {
 		return p.pos.add(p.vel.mult(time));
+	}
+
+	@Override
+	public Interaction interact(Particle before1, Particle before2) {
+		Coord d = unitCollisionVector(before1, before2);
+		double a = netExchangeOfMomentum(d, before1, before2);
+
+		Coord velocityChange = d.mult(a); // works because mass is 1
+
+		Particle after1 = before1.addVelocity(velocityChange);
+		Particle after2 = before2.addVelocity(velocityChange.negate());
+		return Interaction.i(after1, after2);
+	}
+
+	private double netExchangeOfMomentum(Coord d, Particle before1, Particle before2) {
+		Coord momentum1 = before1.vel; // mass is 1
+		Coord momentum2 = before2.vel; // mass is 1
+		return momentum2.dotProduct(d) - momentum1.dotProduct(d);
+	}
+
+	private Coord unitCollisionVector(Particle before1, Particle before2) {
+		Coord collision = before1.pos.subtract(before2.pos);
+		double length = collision.abs();
+		return collision.mult(1 / length);
 	}
 }
