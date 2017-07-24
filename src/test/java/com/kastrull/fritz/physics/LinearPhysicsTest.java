@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.quicktheories.quicktheories.core.Source;
@@ -102,9 +103,55 @@ public class LinearPhysicsTest implements WithQtAndPrimitives {
 			});
 	}
 
-	// TODO collision interaction: preserved momentum
+	@Test
+	public void interaction_preserveEnergy() {
+		qt()
+			.forAll(
+				boxedParticles(),
+				boxedParticles())
+			.checkAssert((p, q) -> {
 
-	// TODO collision interaction: preserved energy
+				Interaction i = phy.interact(p, q);
+				double energyBefore = totalEnergy(p, q);
+				double energyAfter = totalEnergy(i.p1, i.p2);
+
+				assertEquals(
+					energyBefore + " ~= " + energyAfter,
+					energyBefore,
+					energyAfter,
+					energyBefore * Laws.EPSILON);
+			});
+	}
+
+	private double totalEnergy(Particle... ps) {
+		return Stream.of(ps)
+			.map(p -> p.vel.dotProduct(p.vel) / 2)
+			.reduce(0.0, (a, b) -> a + b);
+	}
+
+	@Test
+	public void interaction_preserveMomentum() {
+		qt()
+			.forAll(
+				boxedParticles(),
+				boxedParticles())
+			.checkAssert((p, q) -> {
+
+				Interaction i = phy.interact(p, q);
+				Coord momentumBefore = totalMomentum(p, q);
+				Coord momentumAfter = totalMomentum(i.p1, i.p2);
+
+				assertTrue(
+					momentumBefore + " ~= " + momentumAfter,
+					momentumBefore.approxEq(momentumAfter));
+			});
+	}
+
+	private Coord totalMomentum(Particle... ps) {
+		return Stream.of(ps)
+			.map(p -> p.vel)
+			.reduce(Coord.ZERO, (a, b) -> a.add(b));
+	}
 
 	@Test
 	public void interact_exampleHeadOnHit() {
