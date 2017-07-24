@@ -1,5 +1,10 @@
 package com.kastrull.fritz;
 
+import com.kastrull.fritz.sim.DummySimulator;
+import com.kastrull.fritz.sim.SimCalculation;
+import com.kastrull.fritz.sim.SimState;
+import com.kastrull.fritz.sim.Simulator;
+
 public class Main {
 
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.kastrull.fritz;
+package com.kastrull.fritz.sim;
 
 public interface Simulator {
 
