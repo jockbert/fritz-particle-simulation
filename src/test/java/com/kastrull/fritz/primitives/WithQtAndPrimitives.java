@@ -31,8 +31,8 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 
 	default Source<Double> boxedDoubles() {
 		return doubles().fromZeroToOne().as(
-			d -> (d - 0.5) * 2 * Laws.MAX_SIZE_AND_SPEED,
-			d -> d / (2 * Laws.MAX_SIZE_AND_SPEED) + 0.5);
+			d -> (d - 0.5) * 2 * Laws.MAX_SIZE,
+			d -> d / (2 * Laws.MAX_SIZE) + 0.5);
 	}
 
 	default Source<Coord> boxedCoords() {

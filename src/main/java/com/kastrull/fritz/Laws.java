@@ -6,5 +6,6 @@ public class Laws {
 
 	public static final double EPSILON = 1e-10;
 
-	public static final double MAX_SIZE_AND_SPEED = 1000;
+	public static final double MAX_SIZE = 100000;
+	public static final double MAX_SPEED = 1000;
 }
