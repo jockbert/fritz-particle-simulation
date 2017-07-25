@@ -4,6 +4,8 @@ import com.kastrull.fritz.primitives.Coord;
 
 public class SimSetup {
 
+	public static final SimSetup NULL = ss(Coord.ZERO, 0, 0, 0, 0, "");
+
 	static SimSetup ss(Coord size, int particleCount, double maxSpeed, double rndSeed, double simTime, String name) {
 		return new SimSetup(size, particleCount, maxSpeed, rndSeed, simTime, name);
 	}
