@@ -2,13 +2,22 @@ package com.kastrull.fritz.sim;
 
 public final class SimStateGenerator {
 
-	public static SimStateGenerator create() {
-		// TODO Auto-generated method stub
-		return new SimStateGenerator();
+	private static final double START_TIME = 0.0;
+
+	public static SimStateGenerator create(SimSetup setup) {
+		return new SimStateGenerator(setup);
 	}
 
-	public SimState generateSimState(SimSetup setup) {
-		return SimState.create(0, 0);
+	private final SimSetup setup;
+
+	public SimStateGenerator(SimSetup setup) {
+		this.setup = setup;
 	}
 
+	public SimState generateState() {
+		return SimState
+			.createWithWalls(setup.size.x, setup.size.y)
+			.currentTime(START_TIME)
+			.targetTime(setup.simTime);
+	}
 }

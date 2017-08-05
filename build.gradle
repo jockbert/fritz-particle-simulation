@@ -9,6 +9,9 @@ repositories {
 }
 
 dependencies {
+    compile 'org.javatuples:javatuples:+'
+    //compile  'com.google.guava:guava:22.+'
+
     testCompile 'junit:junit:+'
     testCompile 'org.quicktheories:quicktheories:0.+'
 }

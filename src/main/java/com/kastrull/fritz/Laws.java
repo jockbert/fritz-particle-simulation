@@ -12,4 +12,5 @@ public final class Laws {
 
 	public static final double MAX_SIZE = 100000;
 	public static final double MAX_SPEED = 1000;
+	public static final double MAX_SIM_TIME = 10000;
 }
