@@ -67,6 +67,22 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 				});
 	}
 
+	@Test
+	public void sameSetupGeneratesSameStatesInDifferentGenerators() {
+		qt()
+			.forAll(
+				simSetups())
+			.checkAssert(
+				setup -> {
+					SimStateGenerator g1 = SimStateGenerator.create(setup);
+					SimStateGenerator g2 = SimStateGenerator.create(setup);
+					assertEquals(g1.generateState(), g2.generateState());
+					assertEquals(g1.generateState(), g2.generateState());
+					assertEquals(g1.generateState(), g2.generateState());
+					assertEquals(g1.generateState(), g2.generateState());
+				});
+	}
+
 	private <T> void assertContains(List<T> ts, T t, String mnemonic) {
 		assertTrue(ts + " contains " + mnemonic + " " + t, ts.contains(t));
 	}
