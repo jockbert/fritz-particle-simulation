@@ -1,5 +1,8 @@
 package com.kastrull.fritz.sim;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -31,6 +34,32 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 				simSetups())
 			.check(
 				setup -> genState(setup).currentTime() == 0);
+	}
+
+	@Test
+	public void walls() {
+		qt()
+			.forAll(
+				simSetups())
+			.checkAssert(
+				setup -> {
+					List<Border> ws = genState(setup).walls();
+					assertEquals(4, ws.size());
+
+					Border west = Border.b(0, Border.BY_X);
+					Border south = Border.b(0, Border.BY_Y);
+					Border east = Border.b(setup.size.x, Border.BY_X);
+					Border north = Border.b(setup.size.y, Border.BY_Y);
+
+					assertContains(ws, west, "west");
+					assertContains(ws, east, "east");
+					assertContains(ws, south, "south");
+					assertContains(ws, north, "north");
+				});
+	}
+
+	private <T> void assertContains(List<T> ts, T t, String mnemonic) {
+		assertTrue(ts + " contains " + mnemonic + " " + t, ts.contains(t));
 	}
 
 	SimState genState(SimSetup setup) {

@@ -35,7 +35,7 @@ public final class SimState {
 		return NULL
 			.addWall(Border.b(0, Border.BY_X))
 			.addWall(Border.b(width, Border.BY_X))
-			.addWall(Border.b(0, Border.BY_X))
+			.addWall(Border.b(0, Border.BY_Y))
 			.addWall(Border.b(height, Border.BY_Y));
 	}
 

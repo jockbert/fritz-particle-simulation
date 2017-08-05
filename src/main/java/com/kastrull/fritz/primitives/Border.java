@@ -41,4 +41,9 @@ public class Border {
 			return false;
 		return byX == other.byX;
 	}
+
+	@Override
+	public String toString() {
+		return "Border(" + at + " " + (byX ? "|" : "-") + ")";
+	}
 }
