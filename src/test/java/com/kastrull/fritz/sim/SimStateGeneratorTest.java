@@ -37,6 +37,15 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 	}
 
 	@Test
+	public void targetTime() {
+		qt()
+			.forAll(
+				simSetups())
+			.check(
+				setup -> genState(setup).targetTime() == setup.simTime);
+	}
+
+	@Test
 	public void walls() {
 		qt()
 			.forAll(
