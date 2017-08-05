@@ -24,7 +24,7 @@ public class SimSetupTest implements
 				String name = "asdfgtr";
 				double simTime = 1234.03;
 
-				SimSetup ss = SimSetup.ss(size, particleCount, maxSpeed, rndSeed, simTime, name);
+				SimSetup ss = SimSetup.ss(size, particleCount, maxSpeed, simTime, rndSeed, name);
 
 				assertEquals(size, ss.size);
 				assertExact(particleCount, ss.particleCount);

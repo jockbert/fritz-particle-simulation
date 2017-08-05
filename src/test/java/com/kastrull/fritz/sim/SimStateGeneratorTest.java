@@ -1,6 +1,7 @@
 package com.kastrull.fritz.sim;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -80,6 +81,22 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 					assertEquals(g1.generateState(), g2.generateState());
 					assertEquals(g1.generateState(), g2.generateState());
 					assertEquals(g1.generateState(), g2.generateState());
+				});
+	}
+
+	@Test
+	public void consecutiveStatesDiffer() {
+		qt()
+			.forAll(
+				simSetups())
+			.checkAssert(
+				setup -> {
+					SimStateGenerator g = SimStateGenerator.create(setup);
+
+					assertNotEquals(g.generateState(), g.generateState());
+					assertNotEquals(g.generateState(), g.generateState());
+					assertNotEquals(g.generateState(), g.generateState());
+					assertNotEquals(g.generateState(), g.generateState());
 				});
 	}
 

@@ -2,6 +2,7 @@ package com.kastrull.fritz.sim;
 
 import static org.quicktheories.quicktheories.generators.SourceDSL.doubles;
 import static org.quicktheories.quicktheories.generators.SourceDSL.integers;
+import static org.quicktheories.quicktheories.generators.SourceDSL.longs;
 import static org.quicktheories.quicktheories.generators.SourceDSL.strings;
 
 import org.javatuples.Quartet;
@@ -35,11 +36,8 @@ public interface WithSimSources {
 			d -> d / Laws.MAX_SPEED);
 	}
 
-	default Source<Double> rndSeeds() {
-		// TODO needs rework
-		return doubles().fromZeroToOne().as(
-			d -> d * Laws.MAX_SPEED,
-			d -> d / Laws.MAX_SPEED);
+	default Source<Long> rndSeeds() {
+		return longs().all();
 	}
 
 	default Source<Double> simTimes() {
@@ -66,13 +64,13 @@ public interface WithSimSources {
 					Coord size = q.getValue0();
 					Integer particleCount = q.getValue1();
 					Double maxSpeed = q.getValue2();
-					Double rndSeed = q.getValue3();
+					Long rndSeed = q.getValue3();
 					return SimSetup.ss(
 						size,
 						particleCount,
 						maxSpeed,
-						rndSeed,
 						simTime,
+						rndSeed,
 						name);
 				}));
 	}

@@ -168,11 +168,14 @@ public final class SimState {
 			return false;
 		if (Double.doubleToLongBits(wallAbsorbedMomentum) != Double.doubleToLongBits(other.wallAbsorbedMomentum))
 			return false;
-		if (walls == null) {
-			if (other.walls != null)
-				return false;
-		} else if (!walls.equals(other.walls))
-			return false;
-		return true;
+		if (walls != null)
+			return walls.equals(other.walls);
+		return other.walls == null;
+	}
+
+	@Override
+	public String toString() {
+		return "SimState(particles=" + particles + ", walls=" + walls + ", wallAbsorbedMomentum="
+				+ wallAbsorbedMomentum + ", targetTime=" + targetTime + ", currentTime=" + currentTime + ")";
 	}
 }
