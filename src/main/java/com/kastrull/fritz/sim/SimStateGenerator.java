@@ -9,6 +9,6 @@ public final class SimStateGenerator {
 
 	public SimState generateSimState(SimSetup setup) {
 		return SimState.create(0, 0);
-	};
+	}
 
 }

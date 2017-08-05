@@ -48,9 +48,7 @@ public final class Coord implements Approx<Coord> {
 		Coord other = (Coord) obj;
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;
-		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
-			return false;
-		return true;
+		return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
 	}
 
 	@Override
@@ -98,8 +96,8 @@ public final class Coord implements Approx<Coord> {
 
 	@Override
 	public boolean approxEq(Coord c) {
-		double DELTA_SQR = subtract(c).distansSqr();
-		return -EPSILON_SQR < DELTA_SQR && DELTA_SQR < EPSILON_SQR;
+		double deltaSqr = subtract(c).distansSqr();
+		return -EPSILON_SQR < deltaSqr && deltaSqr < EPSILON_SQR;
 	}
 
 	public double dotProduct(Coord d) {

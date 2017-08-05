@@ -32,6 +32,6 @@ public class Main {
 	}
 
 	private static void println(String line) {
-		System.out.println(line);
+		System.out.println(line); // NOSONAR
 	}
 }
