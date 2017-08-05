@@ -6,12 +6,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+import org.quicktheories.quicktheories.WithQuickTheories;
 
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Particle;
+import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 
-public class SimStateTest {
+public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQuickTheories {
 
 	private static final Border SOME_BORDER = Border.b(3.3, Border.BY_Y);
 	private static final Border SOME_OTHER_BORDER = Border.b(SOME_BORDER.at, !SOME_BORDER.byX);
@@ -41,5 +43,52 @@ public class SimStateTest {
 		assertNotEquals(ss(), ss().currentTime(SOME_CURRENT_TIME + 1));
 		assertNotEquals(ss(), ss().targetTime(SOME_TARGET_TIME + 1));
 		assertEquals(ss(), ss().targetTime(SOME_TARGET_TIME));
+	}
+
+	@Test
+	public void testCurrentTime() throws Exception {
+		qt()
+			.forAll(
+				doubles().fromNegativeInfinityToPositiveInfinity())
+			.check(
+				t -> t == SimState.NULL.currentTime(t).currentTime());
+	}
+
+	@Test
+	public void testTargetTime() throws Exception {
+		qt()
+			.forAll(
+				doubles().fromNegativeInfinityToPositiveInfinity())
+			.check(
+				t -> t == SimState.NULL.targetTime(t).targetTime());
+	}
+
+	@Test
+	public void testWallAbsorbedMomentum() throws Exception {
+		qt()
+			.forAll(
+				doubles().fromNegativeInfinityToPositiveInfinity())
+			.check(
+				m -> m == SimState.NULL.wallAbsorbedMomentum(m).wallAbsorbedMomentum());
+	}
+
+	@Test
+	public void testParticles() throws Exception {
+		qt()
+			.forAll(lists()
+				.allListsOf(boxedParticles())
+				.ofSizeBetween(0, 100))
+			.check(ps -> ps.equals(
+				SimState.NULL.particles(ps).particles()));
+	}
+
+	@Test
+	public void testWalls() throws Exception {
+		qt()
+			.forAll(lists()
+				.allListsOf(boxedBorders())
+				.ofSizeBetween(0, 100))
+			.check(ws -> ws.equals(
+				SimState.NULL.walls(ws).walls()));
 	}
 }

@@ -2,7 +2,6 @@ package com.kastrull.fritz.sim;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
@@ -68,12 +67,30 @@ public final class SimState {
 			currentTime);
 	}
 
-	public Stream<Particle> particles() {
-		return particles.stream();
+	public SimState particles(List<Particle> ps) {
+		return new SimState(
+			ps,
+			walls,
+			wallAbsorbedMomentum,
+			targetTime,
+			currentTime);
 	}
 
-	public Stream<Border> walls() {
-		return walls.stream();
+	public List<Particle> particles() {
+		return particles;
+	}
+
+	public SimState walls(List<Border> ws) {
+		return new SimState(
+			particles,
+			ws,
+			wallAbsorbedMomentum,
+			targetTime,
+			currentTime);
+	}
+
+	public List<Border> walls() {
+		return walls;
 	}
 
 	public double wallAbsorbedMomentum() {
