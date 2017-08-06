@@ -1,5 +1,7 @@
 package com.kastrull.fritz.sim;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.kastrull.fritz.primitives.Coord;
@@ -22,14 +24,27 @@ public final class SimStateGenerator {
 	}
 
 	public SimState generateState() {
-
-		Particle randomParticle = Particle.p(Coord.c(r.nextDouble(), r.nextDouble()),
-			Coord.c(r.nextDouble(), r.nextDouble()));
-
 		return SimState
 			.createWithWalls(setup.size.x, setup.size.y)
 			.currentTime(START_TIME)
 			.targetTime(setup.simTime)
-			.addParticle(randomParticle);
+			.particles(randomParticles(setup.particleCount));
+	}
+
+	private final Particle randomParticle() {
+		return Particle.p(randomCoord(), randomCoord());
+	}
+
+	private final Coord randomCoord() {
+		return Coord.c(r.nextDouble(), r.nextDouble());
+	}
+
+	private List<Particle> randomParticles(int count) {
+		List<Particle> ps = new ArrayList<>(count);
+
+		for (int i = 0; i < count; i++)
+			ps.add(randomParticle());
+
+		return ps;
 	}
 }

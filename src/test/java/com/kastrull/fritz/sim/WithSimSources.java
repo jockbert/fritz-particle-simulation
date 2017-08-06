@@ -26,8 +26,7 @@ public interface WithSimSources {
 	}
 
 	default Source<Integer> particleCounts() {
-		return integers().allPositive();
-
+		return integers().between(0, Laws.MAX_PARTICLE_COUNT);
 	}
 
 	default Source<Double> speeds() {

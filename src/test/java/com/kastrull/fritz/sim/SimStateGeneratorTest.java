@@ -78,6 +78,15 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 	}
 
 	@Test
+	public void particleCount() {
+		qt()
+			.forAll(
+				simSetups())
+			.check(
+				setup -> setup.particleCount == genState(setup).particles().size());
+	}
+
+	@Test
 	public void sameSetupGeneratesSameStatesInDifferentGenerators() {
 		qt()
 			.forAll(
@@ -98,6 +107,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 		qt()
 			.forAll(
 				simSetups())
+			.assuming(setup -> setup.particleCount > 0)
 			.checkAssert(
 				setup -> {
 					SimStateGenerator g = SimStateGenerator.create(setup);
@@ -113,7 +123,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 		assertTrue(ts + " contains " + mnemonic + " " + t, ts.contains(t));
 	}
 
-	SimState genState(SimSetup setup) {
+	private SimState genState(SimSetup setup) {
 		return SimStateGenerator.create(setup).generateState();
 	}
 }
