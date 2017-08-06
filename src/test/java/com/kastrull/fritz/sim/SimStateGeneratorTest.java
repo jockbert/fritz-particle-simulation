@@ -38,6 +38,15 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources 
 	}
 
 	@Test
+	public void momentumStartsAtZero() {
+		qt()
+			.forAll(
+				simSetups())
+			.check(
+				setup -> genState(setup).wallAbsorbedMomentum() == 0);
+	}
+
+	@Test
 	public void targetTime() {
 		qt()
 			.forAll(
