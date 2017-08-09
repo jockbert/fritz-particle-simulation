@@ -11,6 +11,7 @@ repositories {
 dependencies {
     compile 'org.javatuples:javatuples:+'
     //compile  'com.google.guava:guava:22.+'
+    compile  'com.codepoetics:protonpack:1.+'
 
     testCompile 'junit:junit:+'
     testCompile 'org.quicktheories:quicktheories:0.+'
