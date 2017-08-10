@@ -92,7 +92,28 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 	}
 
 	@Test
-	public void particleVelocity() {
+	public void particlePosition_avg() {
+		qt()
+			.forAll(simSetups())
+			.assuming(setup -> setup.particleCount > 20)
+			.checkAssert(
+				setup -> {
+
+					double expectedAvgPosX = setup.size.x / 2;
+					double expectedAvgPosY = setup.size.y / 2;
+
+					SimState state = genState(setup);
+
+					double avgPosX = avg(state, p -> p.pos.x);
+					double avgPosY = avg(state, p -> p.pos.y);
+
+					assertEquals(expectedAvgPosX, avgPosX, expectedAvgPosX * FIFTY_PERCENT);
+					assertEquals(expectedAvgPosY, avgPosY, expectedAvgPosY * FIFTY_PERCENT);
+				});
+	}
+
+	@Test
+	public void particleVelocity_avg() {
 		qt()
 			.forAll(
 				simSetups())
