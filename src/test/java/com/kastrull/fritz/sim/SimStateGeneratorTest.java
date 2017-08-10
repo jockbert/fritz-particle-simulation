@@ -5,12 +5,15 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToDoubleFunction;
 
 import org.junit.Test;
 import org.quicktheories.quicktheories.WithQuickTheories;
 
+import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WithAssert;
@@ -110,6 +113,37 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 					assertEquals(expectedAvgPosX, avgPosX, expectedAvgPosX * FIFTY_PERCENT);
 					assertEquals(expectedAvgPosY, avgPosY, expectedAvgPosY * FIFTY_PERCENT);
 				});
+	}
+
+	@Test
+	public void particlePosition_abs() {
+		qt()
+			.forAll(simSetups())
+			.assuming(setup -> setup.particleCount != 0)
+			.checkAssert(
+				setup -> {
+
+					SimState state = genState(setup);
+
+					assertParticleRange("posX", state, p -> p.pos.x, 0.0, setup.size.x);
+					assertParticleRange("posY", state, p -> p.pos.y, 0.0, setup.size.y);
+					assertParticleRange("velX", state, p -> p.vel.x, -Laws.MAX_SPEED, Laws.MAX_SPEED);
+					assertParticleRange("velY", state, p -> p.vel.y, -Laws.MAX_SPEED, Laws.MAX_SPEED);
+
+				});
+	}
+
+	private void assertParticleRange(String prefix, SimState state, ToDoubleFunction<Particle> mapper, double minLimit,
+			double maxLimit) {
+		OptionalDouble minOpt = state.particles().stream().mapToDouble(mapper).min();
+		assertTrue(minOpt.isPresent());
+		double min = minOpt.getAsDouble();
+		assertTrue(prefix + " " + minLimit + " <= " + min, minLimit <= min);
+
+		OptionalDouble maxOpt = state.particles().stream().mapToDouble(mapper).max();
+		assertTrue(maxOpt.isPresent());
+		double max = maxOpt.getAsDouble();
+		assertTrue(prefix + " " + maxLimit + " >= " + max, maxLimit >= max);
 	}
 
 	@Test
