@@ -12,6 +12,7 @@ import java.util.function.ToDoubleFunction;
 
 import org.junit.Test;
 import org.quicktheories.quicktheories.WithQuickTheories;
+import org.quicktheories.quicktheories.impl.TheoryBuilder;
 
 import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Border;
@@ -38,36 +39,25 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void currentTimeStartsAtZero() {
-		qt()
-			.forAll(
-				simSetups())
-			.check(
-				setup -> genState(setup).currentTime() == 0);
+		forAllSimSetups()
+			.check(setup -> genState(setup).currentTime() == 0);
 	}
 
 	@Test
 	public void momentumStartsAtZero() {
-		qt()
-			.forAll(
-				simSetups())
-			.check(
-				setup -> genState(setup).wallAbsorbedMomentum() == 0);
+		forAllSimSetups()
+			.check(setup -> genState(setup).wallAbsorbedMomentum() == 0);
 	}
 
 	@Test
 	public void targetTime() {
-		qt()
-			.forAll(
-				simSetups())
-			.check(
-				setup -> genState(setup).targetTime() == setup.simTime);
+		forAllSimSetups()
+			.check(setup -> genState(setup).targetTime() == setup.simTime);
 	}
 
 	@Test
 	public void walls() {
-		qt()
-			.forAll(
-				simSetups())
+		forAllSimSetups()
 			.checkAssert(
 				setup -> {
 					List<Border> ws = genState(setup).walls();
@@ -87,17 +77,13 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void particleCount() {
-		qt()
-			.forAll(
-				simSetups())
-			.check(
-				setup -> setup.particleCount == genState(setup).particles().size());
+		forAllSimSetups()
+			.check(setup -> setup.particleCount == genState(setup).particles().size());
 	}
 
 	@Test
 	public void particlePosition_avg() {
-		qt()
-			.forAll(simSetups())
+		forAllSimSetups()
 			.assuming(setup -> setup.particleCount > 20)
 			.checkAssert(
 				setup -> {
@@ -117,8 +103,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void particlePosition_abs() {
-		qt()
-			.forAll(simSetups())
+		forAllSimSetups()
 			.assuming(setup -> setup.particleCount != 0)
 			.checkAssert(
 				setup -> {
@@ -148,9 +133,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void particleVelocity_avg() {
-		qt()
-			.forAll(
-				simSetups())
+		forAllSimSetups()
 			.assuming(setup -> setup.particleCount > 20)
 			.checkAssert(
 				setup -> {
@@ -179,9 +162,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void sameSetupGeneratesSameStatesInDifferentGenerators() {
-		qt()
-			.forAll(
-				simSetups())
+		forAllSimSetups()
 			.assuming(lowParticleCount())
 			.checkAssert(
 				setup -> {
@@ -199,9 +180,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void consecutiveStatesDiffer() {
-		qt()
-			.forAll(
-				simSetups())
+		forAllSimSetups()
 			.assuming(setup -> setup.particleCount > 0)
 			.assuming(lowParticleCount())
 			.checkAssert(
@@ -216,6 +195,10 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 					assertNotEquals(s2, s3);
 					assertNotEquals(s3, s4);
 				});
+	}
+
+	private TheoryBuilder<SimSetup> forAllSimSetups() {
+		return qt().forAll(simSetups());
 	}
 
 	private <T> void assertContains(List<T> ts, T t, String mnemonic) {
