@@ -21,7 +21,7 @@ import com.kastrull.fritz.primitives.WithAssert;
 
 public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources, WithAssert {
 
-	private static final double FIFTY_PERCENT = 0.30;
+	private static final double FIFTY_PERCENT = 0.50;
 
 	@Test
 	@SuppressWarnings("unused")
