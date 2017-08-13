@@ -1,7 +1,6 @@
 package com.kastrull.fritz;
 
 import com.kastrull.fritz.sim.DummySimulator;
-import com.kastrull.fritz.sim.SimCalculation;
 import com.kastrull.fritz.sim.SimState;
 import com.kastrull.fritz.sim.Simulator;
 
@@ -16,19 +15,18 @@ public class Main {
 		Simulator sim = new DummySimulator();
 
 		double upToTime = 100;
-		SimState state = SimState.createWithWalls(10.0, 10.0).addParticle(0.0, 0.0, 0.0, 0.0);
+		SimState state = SimState.createWithWalls(10.0, 10.0).addParticle(0.0, 0.0, 0.0, 0.0).targetTime(upToTime);
 
-		SimCalculation simCalc = sim.simulate(state, upToTime);
+		SimState result = sim.simulate(state);
 
-		double isAtTime = simCalc.isAtTime();
-		boolean isComplete = simCalc.isComplete();
-
-		SimState finalState = simCalc.resultingState();
+		double isAtTime = result.currentTime();
+		boolean isComplete = result.targetTime() == isAtTime;
+		double wallAbsorbedMomentum = result.wallAbsorbedMomentum();
 
 		println("Target time ..............: " + upToTime);
 		println("Is at time ...............: " + isAtTime);
 		println("Is complete ..............: " + isComplete);
-		println("Wall-absorbed momentum ...: " + finalState.wallAbsorbedMomentum());
+		println("Wall-absorbed momentum ...: " + wallAbsorbedMomentum);
 	}
 
 	private static void println(String line) {

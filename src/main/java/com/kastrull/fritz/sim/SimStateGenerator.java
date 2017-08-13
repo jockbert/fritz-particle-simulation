@@ -19,6 +19,10 @@ public final class SimStateGenerator {
 		return new SimStateGenerator(setup);
 	}
 
+	public static SimState generate(SimSetup setup) {
+		return new SimStateGenerator(setup).generateState();
+	}
+
 	private final SimSetup setup;
 	private final Random r;
 

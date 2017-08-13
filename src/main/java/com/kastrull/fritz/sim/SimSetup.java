@@ -6,7 +6,8 @@ public class SimSetup {
 
 	public static final SimSetup NULL = ss(Coord.ZERO, 0, 0, 0, 0, "");
 
-	static SimSetup ss(Coord size, int particleCount, double maxSpeed, double simTime, long rndSeed, String name) {
+	public static SimSetup ss(Coord size, int particleCount, double maxSpeed, double simTime, long rndSeed,
+			String name) {
 		return new SimSetup(size, particleCount, maxSpeed, simTime, rndSeed, name);
 	}
 
