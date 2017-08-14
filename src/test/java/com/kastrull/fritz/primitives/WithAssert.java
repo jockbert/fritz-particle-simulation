@@ -26,6 +26,10 @@ public interface WithAssert {
 		assertEquals(expected, actual, 0.0);
 	}
 
+	default void assertExact(String msg, double expected, double actual) {
+		assertEquals(msg, expected, actual, 0.0);
+	}
+
 	default <T extends Approx<T>> void assertApprox(T c1, T c2) {
 		assertApprox("", c1, c2);
 	}
