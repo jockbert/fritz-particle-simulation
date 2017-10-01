@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -66,9 +67,8 @@ public class LinearPhysicsTest
 	@Test
 	public void collisionTime_neverCollide() {
 		qt()
-			.forAll(boxedParticles())
+			.forAll(boxedParticlesYPositive())
 			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
-			.assuming(p -> p.vel.y > 0)
 			.check(p -> hasNoCollision(
 				phy.collisionTime(p, p.yConjugate())));
 	}
@@ -77,19 +77,22 @@ public class LinearPhysicsTest
 	public void collisionTime_alwaysCollide() {
 		qt()
 			// On y-axis positive position and negative velocity.
-			.forAll(boxedParticles())
+			.forAll(boxedParticlesYPositive())
 			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
-			.assuming(p -> p.vel.y < 0)
-			.check(p -> hasCollision(phy.collisionTime(p, p.yConjugate())));
+			.as(p -> p(p.pos, p.vel.yConjugate()))
+			// .assuming(p -> p.vel.y < 0)
+			.check(
+				p -> hasCollision(
+					phy.collisionTime(p, p.yConjugate())));
 	}
 
 	@Test
 	public void collisionTime_moveParticle_roundtrip() {
 		qt()
 			// On y-axis positive position and negative velocity.
-			.forAll(boxedParticles())
+			.forAll(boxedParticlesYPositive())
 			.assuming(p -> p.pos.y > Laws.PARTICLE_RADIUS)
-			.assuming(p -> p.vel.y < 0)
+			.as(p -> p(p.pos, p.vel.yConjugate()))
 			.checkAssert(p1 -> {
 
 				Particle p2 = p1.yConjugate();
@@ -114,6 +117,7 @@ public class LinearPhysicsTest
 			.forAll(
 				boxedParticles(),
 				boxedParticles())
+			.assuming(noOverlap())
 			.checkAssert((p, q) -> {
 
 				Interaction i = phy.interact(p, q);
@@ -136,6 +140,7 @@ public class LinearPhysicsTest
 			.forAll(
 				boxedParticles(),
 				boxedParticles())
+			.assuming(noOverlap())
 			.checkAssert((p, q) -> {
 
 				Interaction i = phy.interact(p, q);
@@ -144,6 +149,10 @@ public class LinearPhysicsTest
 
 				assertApprox("momentum", momentumBefore, momentumAfter);
 			});
+	}
+
+	private BiPredicate<Particle, Particle> noOverlap() {
+		return (p1, p2) -> !p1.isOverlapping(p2);
 	}
 
 	private Coord totalMomentum(Particle... ps) {

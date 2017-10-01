@@ -41,6 +41,21 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 			.zip(boxedCoords(), Particle::p);
 	}
 
+	default Gen<Particle> boxedParticlesYPositive() {
+		return boxedCoordsYPositive()
+			.zip(boxedCoordsYPositive(), Particle::p);
+	}
+
+	default Gen<Coord> boxedCoordsYPositive() {
+		return boxedDoublesYPositive()
+			.zip(boxedDoublesYPositive(), Coord::c);
+	}
+
+	default Gen<Double> boxedDoublesYPositive() {
+		return doubles().fromZeroToOne().map(
+			d -> Laws.MAX_SIZE);
+	}
+
 	default Gen<Border> boxedBorders() {
 		return booleans().all()
 			.zip(

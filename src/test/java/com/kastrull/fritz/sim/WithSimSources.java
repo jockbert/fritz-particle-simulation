@@ -24,8 +24,8 @@ public interface WithSimSources {
 			.zip(boxedSizeComp(), Coord::c);
 	}
 
-	default Gen<Integer> particleCounts() {
-		return integers().between(0, Laws.MAX_PARTICLE_COUNT);
+	default Gen<Integer> particleCounts(int maxParticleCount) {
+		return integers().between(0, maxParticleCount);
 	}
 
 	default Gen<Double> speeds() {
@@ -48,9 +48,13 @@ public interface WithSimSources {
 	}
 
 	default Gen<SimSetup> simSetups() {
+		return simSetups(Laws.MAX_PARTICLE_COUNT);
+	}
+
+	default Gen<SimSetup> simSetups(int maxParticleCount) {
 		return boxedSizes()
 			.zip(
-				particleCounts(),
+				particleCounts(maxParticleCount),
 				speeds(),
 				Triplet::with)
 			.zip(

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
 import org.junit.Test;
@@ -21,6 +20,7 @@ import com.kastrull.fritz.primitives.WithAssert;
 
 public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources, WithAssert {
 
+	private static final int LOW_PARTICLE_COUNT = 200;
 	private static final double FIFTY_PERCENT = 0.50;
 
 	@Test
@@ -162,8 +162,7 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	@Test
 	public void sameSetupGeneratesSameStatesInDifferentGenerators() {
-		forAllSimSetups()
-			.assuming(lowParticleCount())
+		forAllSimSetupsLowParticleCount()
 			.checkAssert(
 				setup -> {
 					SimStateGenerator g1 = SimStateGenerator.create(setup);
@@ -174,15 +173,10 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 				});
 	}
 
-	private Predicate<SimSetup> lowParticleCount() {
-		return setup -> setup.particleCount < 200;
-	}
-
 	@Test
 	public void consecutiveStatesDiffer() {
-		forAllSimSetups()
+		forAllSimSetupsLowParticleCount()
 			.assuming(setup -> setup.particleCount > 0)
-			.assuming(lowParticleCount())
 			.checkAssert(
 				setup -> {
 					SimStateGenerator g = SimStateGenerator.create(setup);
@@ -199,6 +193,10 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 
 	private TheoryBuilder<SimSetup> forAllSimSetups() {
 		return qt().forAll(simSetups());
+	}
+
+	private TheoryBuilder<SimSetup> forAllSimSetupsLowParticleCount() {
+		return qt().forAll(simSetups(LOW_PARTICLE_COUNT));
 	}
 
 	private <T> void assertContains(List<T> ts, T t, String mnemonic) {

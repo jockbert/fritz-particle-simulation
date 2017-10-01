@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.quicktheories.WithQuickTheories;
 
+import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.WithAssert;
 
 public class SimSetupTest implements
@@ -17,7 +18,7 @@ public class SimSetupTest implements
 		qt()
 			.forAll(
 				boxedSizes(),
-				particleCounts(),
+				particleCounts(Laws.MAX_PARTICLE_COUNT),
 				speeds(),
 				rndSeeds())
 			.checkAssert((size, particleCount, maxSpeed, rndSeed) -> {
