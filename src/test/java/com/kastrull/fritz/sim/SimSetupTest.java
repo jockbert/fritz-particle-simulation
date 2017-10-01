@@ -3,7 +3,7 @@ package com.kastrull.fritz.sim;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.quicktheories.quicktheories.WithQuickTheories;
+import org.quicktheories.WithQuickTheories;
 
 import com.kastrull.fritz.primitives.WithAssert;
 

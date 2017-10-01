@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
-import org.quicktheories.quicktheories.WithQuickTheories;
+import org.quicktheories.WithQuickTheories;
 
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
@@ -49,7 +49,7 @@ public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQu
 	public void testCurrentTime() throws Exception {
 		qt()
 			.forAll(
-				doubles().fromNegativeInfinityToPositiveInfinity())
+				doubles().any())
 			.check(
 				t -> t == SimState.NULL.currentTime(t).currentTime());
 	}
@@ -58,7 +58,7 @@ public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQu
 	public void testTargetTime() throws Exception {
 		qt()
 			.forAll(
-				doubles().fromNegativeInfinityToPositiveInfinity())
+				doubles().any())
 			.check(
 				t -> t == SimState.NULL.targetTime(t).targetTime());
 	}
@@ -67,7 +67,7 @@ public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQu
 	public void testWallAbsorbedMomentum() throws Exception {
 		qt()
 			.forAll(
-				doubles().fromNegativeInfinityToPositiveInfinity())
+				doubles().any())
 			.check(
 				m -> m == SimState.NULL.wallAbsorbedMomentum(m).wallAbsorbedMomentum());
 	}
@@ -76,7 +76,7 @@ public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQu
 	public void testParticles() throws Exception {
 		qt()
 			.forAll(lists()
-				.allListsOf(boxedParticles())
+				.of(boxedParticles())
 				.ofSizeBetween(0, 100))
 			.check(ps -> ps.equals(
 				SimState.NULL.particles(ps).particles()));
@@ -86,7 +86,7 @@ public class SimStateTest implements WithQtAndPrimitives, WithSimSources, WithQu
 	public void testWalls() throws Exception {
 		qt()
 			.forAll(lists()
-				.allListsOf(boxedBorders())
+				.of(boxedBorders())
 				.ofSizeBetween(0, 100))
 			.check(ws -> ws.equals(
 				SimState.NULL.walls(ws).walls()));

@@ -1,76 +1,72 @@
 package com.kastrull.fritz.sim;
 
-import static org.quicktheories.quicktheories.generators.SourceDSL.doubles;
-import static org.quicktheories.quicktheories.generators.SourceDSL.integers;
-import static org.quicktheories.quicktheories.generators.SourceDSL.longs;
-import static org.quicktheories.quicktheories.generators.SourceDSL.strings;
+import static org.quicktheories.generators.SourceDSL.doubles;
+import static org.quicktheories.generators.SourceDSL.integers;
+import static org.quicktheories.generators.SourceDSL.longs;
+import static org.quicktheories.generators.SourceDSL.strings;
 
-import org.javatuples.Quartet;
-import org.quicktheories.quicktheories.core.Source;
+import org.javatuples.Triplet;
+import org.quicktheories.core.Gen;
 
 import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Coord;
 
 public interface WithSimSources {
 
-	default Source<Double> boxedSizeComp() {
-		return Source
-			.of(doubles().fromZeroToOne().as(
-				d -> d * Laws.MAX_SIZE,
-				d -> d / Laws.MAX_SIZE));
+	default Gen<Double> boxedSizeComp() {
+		return doubles()
+			.fromZeroToOne()
+			.map(d -> d * Laws.MAX_SIZE);
 	}
 
-	default Source<Coord> boxedSizes() {
-		return Source.of(boxedSizeComp()
-			.combine(boxedSizeComp(), Coord::c));
+	default Gen<Coord> boxedSizes() {
+		return boxedSizeComp()
+			.zip(boxedSizeComp(), Coord::c);
 	}
 
-	default Source<Integer> particleCounts() {
+	default Gen<Integer> particleCounts() {
 		return integers().between(0, Laws.MAX_PARTICLE_COUNT);
 	}
 
-	default Source<Double> speeds() {
-		return doubles().fromZeroToOne().as(
-			d -> d * Laws.MAX_SPEED,
-			d -> d / Laws.MAX_SPEED);
+	default Gen<Double> speeds() {
+		return doubles()
+			.fromZeroToOne()
+			.map(d -> d * Laws.MAX_SPEED);
 	}
 
-	default Source<Long> rndSeeds() {
+	default Gen<Long> rndSeeds() {
 		return longs().all();
 	}
 
-	default Source<Double> simTimes() {
-		return doubles().fromZeroToOne().as(
-			d -> d * Laws.MAX_SIM_TIME,
-			d -> d / Laws.MAX_SIM_TIME);
+	default Gen<Double> simTimes() {
+		return doubles().fromZeroToOne()
+			.map(d -> d * Laws.MAX_SIM_TIME);
 	}
 
-	default Source<String> names() {
+	default Gen<String> names() {
 		return strings().allPossible().ofLengthBetween(0, 50);
 	}
 
-	default Source<SimSetup> simSetups() {
-		return Source.of(boxedSizes()
-			.combine(
+	default Gen<SimSetup> simSetups() {
+		return boxedSizes()
+			.zip(
 				particleCounts(),
 				speeds(),
-				rndSeeds(),
-				Quartet::with)
-			.combine(
+				Triplet::with)
+			.zip(
 				simTimes(),
-				names(),
-				(q, simTime, name) -> {
+				rndSeeds(),
+				(q, simTime, rndSeed) -> {
 					Coord size = q.getValue0();
 					Integer particleCount = q.getValue1();
 					Double maxSpeed = q.getValue2();
-					Long rndSeed = q.getValue3();
 					return SimSetup.ss(
 						size,
 						particleCount,
 						maxSpeed,
 						simTime,
 						rndSeed,
-						name);
-				}));
+						"SomeName");
+				});
 	}
 }

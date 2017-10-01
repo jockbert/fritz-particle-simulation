@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.junit.Test;
-import org.quicktheories.quicktheories.core.Source;
+import org.quicktheories.core.Gen;
 
 import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Border;
@@ -22,7 +22,8 @@ import com.kastrull.fritz.primitives.WallInteraction;
 import com.kastrull.fritz.primitives.WithAssert;
 import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 
-public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
+public class LinearPhysicsTest
+		implements WithQtAndPrimitives, WithAssert {
 
 	Physics phy = new LinearPhysics();
 
@@ -277,10 +278,8 @@ public class LinearPhysicsTest implements WithQtAndPrimitives, WithAssert {
 		return !collisionTime.isPresent();
 	}
 
-	private Source<Coord> twoRadiousDistances() {
-		Source<Coord> twoRadious = arbitrary()
-			.pick(c(0, 2), c(0, -2), c(2, 0), c(-2, 0));
-		return twoRadious;
+	private Gen<Coord> twoRadiousDistances() {
+		return arbitrary().pick(c(0, 2), c(0, -2), c(2, 0), c(-2, 0));
 	}
 
 	@Test

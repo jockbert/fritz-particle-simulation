@@ -11,8 +11,8 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
 import org.junit.Test;
-import org.quicktheories.quicktheories.WithQuickTheories;
-import org.quicktheories.quicktheories.impl.TheoryBuilder;
+import org.quicktheories.WithQuickTheories;
+import org.quicktheories.dsl.TheoryBuilder;
 
 import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Border;
