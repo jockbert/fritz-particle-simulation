@@ -1,5 +1,7 @@
 package com.kastrull.fritz.primitives;
 
+import com.kastrull.fritz.Laws;
+
 public class Particle implements Approx<Particle> {
 
 	public static final Particle ZERO = p(Coord.ZERO, Coord.ZERO);
@@ -94,5 +96,9 @@ public class Particle implements Approx<Particle> {
 
 	public Particle addVelocity(Coord velocityChange) {
 		return p(pos, vel.add(velocityChange));
+	}
+
+	public boolean isOverlapping(Particle p2) {
+		return pos.subtract(p2.pos).distance() <= Laws.PARTICLE_DIAMETER;
 	}
 }
