@@ -4,7 +4,7 @@ abstract public class Event implements Comparable<Event> {
 
 	private final double atTime;
 
-	Event(double atTime) {
+	protected Event(double atTime) {
 		this.atTime = atTime;
 	}
 
@@ -12,6 +12,7 @@ abstract public class Event implements Comparable<Event> {
 		return atTime;
 	}
 
+	/** @return true if end time is reached, otherwise false. */
 	public abstract boolean apply();
 
 	/**
@@ -26,5 +27,4 @@ abstract public class Event implements Comparable<Event> {
 			result = 1;
 		return result;
 	}
-
 }

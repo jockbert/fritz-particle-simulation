@@ -1,6 +1,7 @@
 package com.kastrull.fritz.sim;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.kastrull.fritz.primitives.Border;
@@ -74,6 +75,10 @@ public final class SimState {
 			wallAbsorbedMomentum,
 			targetTime,
 			currentTime);
+	}
+
+	public SimState particles(Particle... ps) {
+		return particles(Arrays.asList(ps));
 	}
 
 	public List<Particle> particles() {
