@@ -14,7 +14,7 @@ public final class SimEndEvent extends Event {
 	}
 
 	@Override
-	public Stream<Event> next() {
+	public Stream<Integer> getPids() {
 		return Stream.empty();
 	}
 }

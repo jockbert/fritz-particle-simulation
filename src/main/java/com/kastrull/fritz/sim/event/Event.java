@@ -30,6 +30,5 @@ abstract public class Event implements Comparable<Event> {
 		return result;
 	}
 
-	/** Next event for associated particle. */
-	public abstract Stream<Event> next();
+	public abstract Stream<Integer> getPids();
 }

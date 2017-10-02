@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import com.kastrull.fritz.primitives.Particle;
 
 /** Particle register */
-class Register {
+public class Register {
 	final List<Particle> particles;
 	final double[] times;
 
