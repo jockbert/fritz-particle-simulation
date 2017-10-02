@@ -55,14 +55,21 @@ public interface WithAssert {
 		return (!msg.isEmpty()) ? msg + ", " : "";
 	}
 
-	default void assertApprox(double expected, Optional<Double> actual) {
-		assertNotNull(actual);
-		assertTrue(actual.isPresent());
-		assertApprox(expected, actual.get());
+	default void assertApprox(String msg, double expected, Optional<Double> actual) {
+		String prefix = messagePrefix(msg);
+		assertNotNull(
+			prefix + "is not null",
+			actual);
+		assertTrue(
+			prefix + "is present, but is " + actual,
+			actual.isPresent());
+		assertApprox(msg, expected, actual.get());
 	}
 
-	default void assertNone(Optional<Double> actual) {
-		assertNotNull(actual);
-		assertFalse(actual.isPresent());
+	default void assertNone(String msg, Optional<Double> actual) {
+		String prefix = messagePrefix(msg);
+		assertNotNull(prefix + "is not null", actual);
+		assertFalse(prefix + " is not present, but is " + actual,
+			actual.isPresent());
 	}
 }

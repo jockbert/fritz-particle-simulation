@@ -28,18 +28,13 @@ class Register {
 		times[pid] = atTime;
 	}
 
-	private Particle getAtTime(Integer pid, double atTime) {
+	public Particle getAtTime(Integer pid, double atTime) {
 		double timeDiff = atTime - times[pid];
 		return particles.get(pid).moveTime(timeDiff);
 	}
 
 	Stream<Integer> ids() {
 		return IntStream.range(0, particles.size()).boxed();
-	}
-
-	@Deprecated
-	Particle get(int pid) {
-		return particles.get(pid);
 	}
 
 	public List<Particle> toList(double atTime) {

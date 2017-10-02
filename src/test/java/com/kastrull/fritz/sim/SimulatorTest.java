@@ -7,45 +7,54 @@ import static com.kastrull.fritz.primitives.Coord.c;
 import static com.kastrull.fritz.primitives.Particle.p;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 
 import com.kastrull.fritz.physics.LinearPhysics;
-import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WithAssert;
 
 public class SimulatorTest implements WithAssert {
-
-	private static List<Particle> EMPTY = new ArrayList<>();
 
 	private Simulator cut = new BasicSimulator(new LinearPhysics());
 
 	@Test
 	public void testEmpty() {
+		SimState start = stateTenByTenBox()
+			.targetTime(10);
 
-		SimState startState = stateTenByTenBox().targetTime(10);
+		SimState expected = start
+			.currentTime(10);
 
-		SimState endState = cut.simulate(startState);
-
-		assertExact("CurrentTime", 10, endState.currentTime());
-		assertEquals(startState, endState.currentTime(0));
+		assertEndState(expected, start);
 	}
 
 	@Test
 	public void testOneWallHit() {
-
-		SimState startState = stateTenByTenBox()
+		SimState start = stateTenByTenBox()
 			.addParticle(p(c(5, 5), c(1, 0)))
-			.targetTime(6);
+			.targetTime(5);
 
+		SimState expected = start
+			.currentTime(5)
+			.particles(p(c(8, 5), c(-1, 0)));
+
+		assertEndState(expected, start);
+	}
+
+	@Test
+	public void testTwoWallHit() {
+		SimState start = stateTenByTenBox()
+			.addParticle(p(c(5, 5), c(1, 0)))
+			.targetTime(13);
+
+		SimState expectedEnd = start
+			.currentTime(13)
+			.particles(p(c(2, 5), c(1, 0)));
+
+		assertEndState(expectedEnd, start);
+	}
+
+	private void assertEndState(SimState expectedEndState, SimState startState) {
 		SimState endState = cut.simulate(startState);
-
-		SimState expectedEndState = startState
-			.currentTime(6)
-			.particles(p(c(9, 5), c(-1, 0)));
-
 		assertEquals(expectedEndState, endState);
 	}
 

@@ -1,5 +1,7 @@
 package com.kastrull.fritz.sim.event;
 
+import java.util.stream.Stream;
+
 abstract public class Event implements Comparable<Event> {
 
 	private final double atTime;
@@ -8,7 +10,7 @@ abstract public class Event implements Comparable<Event> {
 		this.atTime = atTime;
 	}
 
-	final double atTime() {
+	public final double atTime() {
 		return atTime;
 	}
 
@@ -27,4 +29,7 @@ abstract public class Event implements Comparable<Event> {
 			result = 1;
 		return result;
 	}
+
+	/** Next event for associated particle. */
+	public abstract Stream<Event> next();
 }

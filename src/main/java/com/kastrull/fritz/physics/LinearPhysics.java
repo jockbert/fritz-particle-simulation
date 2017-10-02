@@ -7,6 +7,7 @@ import static com.kastrull.fritz.primitives.WallInteraction.wi;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.kastrull.fritz.Laws;
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Interaction;
@@ -61,8 +62,8 @@ public final class LinearPhysics implements Physics {
 	}
 
 	private double netExchangeOfMomentum(Coord d, Particle before1, Particle before2) {
-		Coord momentum1 = before1.vel; // mass is 1
-		Coord momentum2 = before2.vel; // mass is 1
+		Coord momentum1 = before1.vel; // XXX mass is 1
+		Coord momentum2 = before2.vel; // XXX mass is 1
 		return momentum2.dotProduct(d) - momentum1.dotProduct(d);
 	}
 
@@ -87,11 +88,25 @@ public final class LinearPhysics implements Physics {
 	}
 
 	@Override
-	public Optional<Double> collisionTime(Particle p, Border wall) {
+	public Optional<Double> collisionTimeWall(Particle p, Border wall) {
 
 		double velocity = wall.byX ? p.vel.x : p.vel.y;
 		double distance = wall.at - (wall.byX ? p.pos.x : p.pos.y);
-		double time = distance / velocity;
+
+		// compensate for particle radius
+		double distanceMinusRadius = distance + (distance < 0 ? 1 : -1) * Laws.PARTICLE_RADIUS;
+
+		// distance and velocity has different signs.
+		boolean isMovingAway = distance * velocity < 0;
+
+		// distance to wall is less than a particle radius - hence overlap.
+		boolean isOverlapping = Math.abs(distance) < Laws.PARTICLE_RADIUS;
+
+		if (isMovingAway || isOverlapping) {
+			return Optional.empty();
+		}
+
+		double time = distanceMinusRadius / velocity;
 
 		boolean isInPresentOrNearFuture = time >= 0 && Double.isFinite(time);
 

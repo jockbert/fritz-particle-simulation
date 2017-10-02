@@ -222,14 +222,55 @@ public class LinearPhysicsTest
 		Particle slow = p(start, c(1e-100, 2));
 		Particle fast = p(start, c(1e100, -2));
 
-		assertApprox(4.0, phy.collisionTime(pos, wall));
-		assertNone(phy.collisionTime(zero, wall));
-		assertNone(phy.collisionTime(neg, wall));
-		assertApprox(4.0e100, phy.collisionTime(slow, wall));
-		assertApprox(4.0e-100, phy.collisionTime(fast, wall));
+		assertApprox("positive", 3.0, phy.collisionTimeWall(pos, wall));
+		assertNone("zero", phy.collisionTimeWall(zero, wall));
+		assertNone("negative", phy.collisionTimeWall(neg, wall));
+		assertApprox("slow", 3.0e100, phy.collisionTimeWall(slow, wall));
+		assertApprox("fast", 3.0e-100, phy.collisionTimeWall(fast, wall));
 
-		assertApprox(2.0, phy.collisionTime(pos, b(4, Border.BY_Y)));
-		assertApprox(4.0, phy.collisionTime(neg, b(-4, Border.BY_X)));
+		assertApprox("positive and Y-wall",
+			2.0, phy.collisionTimeWall(pos, b(5, Border.BY_Y)));
+
+		assertApprox("negative and wall at -4",
+			3.0, phy.collisionTimeWall(neg, b(-4, Border.BY_X)));
+	}
+
+	@Test
+	public void collisionTimeWall_noCollisionOnMoveAwayOrStationaryOrOverlap() {
+		Border wallX = Border.b(10, Border.BY_X);
+		Border wallY = Border.b(10, Border.BY_Y);
+
+		Particle awayX = p(c(9, 5), c(-1, 0));
+		Particle stationaryX = p(c(9, 5), c(0, 1));
+		Particle towardsX = p(c(9, 5), c(1, 0));
+		Particle awayY = p(c(5, 9), c(0, -1));
+		Particle stationaryY = p(c(5, 9), c(1, 0));
+		Particle towardsY = p(c(5, 9), c(0, 1));
+		Particle overlap = p(c(10, 10), c(-2, -2));
+
+		assertNone("awayX",
+			phy.collisionTimeWall(awayX, wallX));
+
+		assertNone("stationaryY",
+			phy.collisionTimeWall(stationaryX, wallX));
+
+		assertApprox("towardsX",
+			0, phy.collisionTimeWall(towardsX, wallX));
+
+		assertNone("overlap X",
+			phy.collisionTimeWall(overlap, wallX));
+
+		assertNone("awayY",
+			phy.collisionTimeWall(awayY, wallY));
+
+		assertNone("stationaryY",
+			phy.collisionTimeWall(stationaryY, wallY));
+
+		assertApprox("towardsY",
+			0, phy.collisionTimeWall(towardsY, wallY));
+
+		assertNone("overlap Y",
+			phy.collisionTimeWall(overlap, wallY));
 	}
 
 	@Test
