@@ -53,7 +53,7 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 
 	default Gen<Double> boxedDoublesYPositive() {
 		return doubles().fromZeroToOne().map(
-			d -> Laws.MAX_SIZE);
+			d -> d * Laws.MAX_SIZE);
 	}
 
 	default Gen<Border> boxedBorders() {
