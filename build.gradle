@@ -13,5 +13,5 @@ dependencies {
     compile  'com.codepoetics:protonpack:1.+'
 
     testCompile 'junit:junit:+'
-    testCompile 'org.quicktheories:quicktheories:0.20'
+    testCompile 'org.quicktheories:quicktheories:0.2+'
 }
