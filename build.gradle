@@ -6,9 +6,11 @@ targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
+    compile 'com.github.jockbert:particle_sim_config:+'
     compile 'org.javatuples:javatuples:+'
     compile  'com.codepoetics:protonpack:1.+'
 
