@@ -14,14 +14,11 @@ import com.kastrull.fritz.primitives.Coord;
 public interface WithSimSources {
 
 	default Gen<Double> boxedSizeComp() {
-		return doubles()
-			.fromZeroToOne()
-			.map(d -> d * Laws.MAX_SIZE);
+		return doubles().between(0, Laws.MAX_SIZE);
 	}
 
 	default Gen<Coord> boxedSizes() {
-		return boxedSizeComp()
-			.zip(boxedSizeComp(), Coord::c);
+		return boxedSizeComp().zip(boxedSizeComp(), Coord::c);
 	}
 
 	default Gen<Integer> particleCounts(int maxParticleCount) {
@@ -29,9 +26,7 @@ public interface WithSimSources {
 	}
 
 	default Gen<Double> speeds() {
-		return doubles()
-			.fromZeroToOne()
-			.map(d -> d * Laws.MAX_SPEED);
+		return doubles().between(0, Laws.MAX_SPEED);
 	}
 
 	default Gen<Long> rndSeeds() {
@@ -39,8 +34,7 @@ public interface WithSimSources {
 	}
 
 	default Gen<Double> simTimes() {
-		return doubles().fromZeroToOne()
-			.map(d -> d * Laws.MAX_SIM_TIME);
+		return doubles().between(0, Laws.MAX_SIM_TIME);
 	}
 
 	default Gen<String> names() {

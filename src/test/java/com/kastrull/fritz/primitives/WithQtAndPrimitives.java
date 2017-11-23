@@ -22,23 +22,19 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 	default Gen<Double> degrees() {
 		// A little bit over a complete rotation (7 > 2*pi) in both positive
 		// and negative direction.
-		return doubles().fromZeroToOne()
-			.map(d -> d * 14 - 7);
+		return doubles().between(-7, 7);
 	}
 
 	default Gen<Double> boxedDoubles() {
-		return doubles().fromZeroToOne().map(
-			d -> (d - 0.5) * 2 * Laws.MAX_SIZE);
+		return doubles().between(-Laws.MAX_SIZE, Laws.MAX_SIZE);
 	}
 
 	default Gen<Coord> boxedCoords() {
-		return boxedDoubles()
-			.zip(boxedDoubles(), Coord::c);
+		return boxedDoubles().zip(boxedDoubles(), Coord::c);
 	}
 
 	default Gen<Particle> boxedParticles() {
-		return boxedCoords()
-			.zip(boxedCoords(), Particle::p);
+		return boxedCoords().zip(boxedCoords(), Particle::p);
 	}
 
 	default Gen<Particle> boxedParticlesYPositive() {
@@ -52,15 +48,13 @@ public interface WithQtAndPrimitives extends WithQuickTheories {
 	}
 
 	default Gen<Double> boxedDoublesYPositive() {
-		return doubles().fromZeroToOne().map(
-			d -> d * Laws.MAX_SIZE);
+		return doubles().between(0, Laws.MAX_SIZE);
 	}
 
 	default Gen<Border> boxedBorders() {
-		return booleans().all()
-			.zip(
-				boxedDoubles(),
-				(byX, at) -> Border.b(at, byX));
+		return booleans().all().zip(
+			boxedDoubles(),
+			(byX, at) -> Border.b(at, byX));
 	}
 
 }
