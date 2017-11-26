@@ -2,7 +2,10 @@ package com.kastrull.fritz.primitives;
 
 public class Border {
 
+	/** Vertical wall, if x-axis is horizontal. */
 	public static final boolean BY_X = true;
+
+	/** Horizontal wall, if y-axis is vertical. */
 	public static final boolean BY_Y = false;
 
 	public final double at;
