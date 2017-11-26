@@ -28,14 +28,15 @@ public class BasicSimulator implements Simulator {
 		}
 	}
 
-	BasicSimulator(Physics phy) {
+	public BasicSimulator(Physics phy) {
 		this.physics = phy;
-
 	}
 
 	@Override
 	public SimState simulate(final SimState startState) {
-		Register register = new Register(startState.particles(), startState.currentTime());
+		Register register = new Register(
+			startState.particles(),
+			startState.currentTime());
 
 		PriorityQueue<Event> eventQueue = new PriorityQueue<>();
 
@@ -44,7 +45,7 @@ public class BasicSimulator implements Simulator {
 			register,
 			startState.walls(),
 			startState.currentTime(),
-			0.0);
+			startState.wallAbsorbedMomentum());
 
 		eventQueue.add(new SimEndEvent(startState.targetTime()));
 
