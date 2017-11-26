@@ -77,6 +77,27 @@ public class BasicSimulatorTest implements WithAssert {
 		assertEndState(expectedEnd, start);
 	}
 
+	@Test
+	public void testParticleCollision() {
+
+		// 3 4 5 6 7
+		// a> .. .. b. ..
+		// .. a. .. .. b>
+
+		SimState start = stateTenByTenBox()
+			.addParticle(p(c(3, 5), c(1, 0)))
+			.addParticle(p(c(6, 5), c(0, 0)))
+			.targetTime(2);
+
+		SimState expected = stateTenByTenBox()
+			.addParticle(p(c(4, 5), c(0, 0)))
+			.addParticle(p(c(7, 5), c(1, 0)))
+			.targetTime(2)
+			.currentTime(2);
+
+		assertEndState(expected, start);
+	}
+
 	private void assertEndState(SimState expectedEndState, SimState startState) {
 		SimState endState = cut.simulate(startState);
 		assertEquals(expectedEndState, endState);

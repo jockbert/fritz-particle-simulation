@@ -12,6 +12,7 @@ import com.kastrull.fritz.physics.Physics;
 import com.kastrull.fritz.primitives.Border;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.sim.event.Event;
+import com.kastrull.fritz.sim.event.ParticleHit;
 import com.kastrull.fritz.sim.event.SimEndEvent;
 import com.kastrull.fritz.sim.event.WallHit;
 
@@ -49,9 +50,16 @@ public class BasicSimulator implements Simulator {
 
 		eventQueue.add(new SimEndEvent(startState.targetTime()));
 
+		// add all wall collisions
 		register
 			.ids()
 			.flatMap(findWallCollision(context))
+			.forEach(eventQueue::add);
+
+		// add all particle collisions
+		register
+			.ids()
+			.flatMap(findParticleCollision(context))
 			.forEach(eventQueue::add);
 
 		while (!eventQueue.isEmpty()) {
@@ -81,12 +89,29 @@ public class BasicSimulator implements Simulator {
 				.collisionTimeWall(particle, wall)
 				.map(atTime -> new WallHit(atTime + ctx.atTime, wall, pid, ctx));
 
-			// XXX Include in event comparator
-			// Comparator<Event> minTimeComparator = (w1, w2) -> Double
-			// .compare(w1.atTime, w2.atTime);
-
 			Optional<Event> maybeHit = ctx.walls.stream()
 				.map(toWallHit)
+				.flatMap(StreamUtils::stream).min(Event::compareTo);
+
+			return stream(maybeHit);
+		};
+	}
+
+	private Function<Integer, Stream<Event>> findParticleCollision(Context ctx) {
+
+		return pid -> {
+
+			Particle particle = ctx.register.getAtTime(pid, ctx.atTime);
+
+			Function<Integer, Optional<Event>> particleHit = otherPid -> {
+				Particle otherParticle = ctx.register.getAtTime(otherPid, ctx.atTime);
+				return ctx.phy
+					.collisionTime(particle, otherParticle)
+					.map(atTime -> new ParticleHit(atTime + ctx.atTime, pid, otherPid, ctx));
+			};
+			Optional<Event> maybeHit = ctx.register.ids()
+				.filter(otherPid -> otherPid > pid) // Ad-hoc solution
+				.map(particleHit)
 				.flatMap(StreamUtils::stream).min(Event::compareTo);
 
 			return stream(maybeHit);

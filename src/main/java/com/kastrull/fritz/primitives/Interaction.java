@@ -54,5 +54,4 @@ public class Interaction implements Approx<Interaction> {
 	public boolean approxEq(Interaction other) {
 		return p1.approxEq(other.p1) && p2.approxEq(other.p2);
 	}
-
 }
