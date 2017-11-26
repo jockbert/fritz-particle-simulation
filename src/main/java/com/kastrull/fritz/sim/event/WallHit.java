@@ -3,6 +3,8 @@ package com.kastrull.fritz.sim.event;
 import java.util.stream.Stream;
 
 import com.kastrull.fritz.primitives.Border;
+import com.kastrull.fritz.primitives.Particle;
+import com.kastrull.fritz.primitives.WallInteraction;
 import com.kastrull.fritz.sim.Context;
 
 public final class WallHit extends Event {
@@ -20,9 +22,14 @@ public final class WallHit extends Event {
 
 	@Override
 	public boolean apply() {
-		// XXX need fixing: wall momentum
+		Particle particle = ctx.register.getAtTime(pid, atTime());
+
+		WallInteraction interaction = ctx.phy.interactWall(particle, wall);
+
 		ctx.register.modify(pid, atTime(),
-			particle -> ctx.phy.interactWall(particle, wall).p);
+			particleIgnored -> interaction.p);
+
+		ctx.wallAbsorbedMomentum += interaction.wallMomentum.distance();
 
 		return false;
 	}

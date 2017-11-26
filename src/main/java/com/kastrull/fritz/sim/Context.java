@@ -10,11 +10,13 @@ public final class Context {
 	public final Register register;
 	public final List<Border> walls;
 	public double atTime;
+	public double wallAbsorbedMomentum;
 
-	Context(Physics phy, Register register, List<Border> walls, double atTime) {
+	Context(Physics phy, Register register, List<Border> walls, double atTime, double wallAbsorbedMomentum) {
 		this.phy = phy;
 		this.register = register;
 		this.walls = walls;
 		this.atTime = atTime;
+		this.wallAbsorbedMomentum = wallAbsorbedMomentum;
 	}
 }

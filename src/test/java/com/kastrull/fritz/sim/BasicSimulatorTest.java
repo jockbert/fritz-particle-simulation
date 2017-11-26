@@ -36,7 +36,8 @@ public class BasicSimulatorTest implements WithAssert {
 
 		SimState expected = start
 			.currentTime(5)
-			.particles(p(c(8, 5), c(-1, 0)));
+			.particles(p(c(8, 5), c(-1, 0)))
+			.wallAbsorbedMomentum(2);
 
 		assertEndState(expected, start);
 	}
@@ -49,7 +50,8 @@ public class BasicSimulatorTest implements WithAssert {
 
 		SimState expectedEnd = start
 			.currentTime(13)
-			.particles(p(c(5, 2), c(0, 1)));
+			.particles(p(c(5, 2), c(0, 1)))
+			.wallAbsorbedMomentum(4);
 
 		assertEndState(expectedEnd, start);
 	}
@@ -69,7 +71,8 @@ public class BasicSimulatorTest implements WithAssert {
 
 		SimState expectedEnd = start
 			.currentTime(4)
-			.particles(p(startPos, startVelocity.negate()));
+			.particles(p(startPos, startVelocity.negate()))
+			.wallAbsorbedMomentum(6);
 
 		assertEndState(expectedEnd, start);
 

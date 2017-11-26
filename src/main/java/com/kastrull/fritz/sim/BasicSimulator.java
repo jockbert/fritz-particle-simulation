@@ -43,7 +43,8 @@ public class BasicSimulator implements Simulator {
 			physics,
 			register,
 			startState.walls(),
-			startState.currentTime());
+			startState.currentTime(),
+			0.0);
 
 		eventQueue.add(new SimEndEvent(startState.targetTime()));
 
@@ -59,7 +60,8 @@ public class BasicSimulator implements Simulator {
 				double targetTime = startState.targetTime();
 				return startState
 					.currentTime(targetTime)
-					.particles(register.toList(targetTime));
+					.particles(register.toList(targetTime))
+					.wallAbsorbedMomentum(context.wallAbsorbedMomentum);
 			}
 
 			event.getPids().flatMap(findWallCollision(context)).forEach(eventQueue::add);
