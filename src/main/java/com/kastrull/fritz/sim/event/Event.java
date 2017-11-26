@@ -27,7 +27,19 @@ abstract public class Event implements Comparable<Event> {
 			result = -1;
 		if (atTime > o.atTime())
 			result = 1;
-		return result;
+
+		return result == 0
+				? simEndEventIsLastAmongSameTimes(o)
+				: result;
+	}
+
+	private int simEndEventIsLastAmongSameTimes(Event o) {
+		if (this instanceof SimEndEvent) {
+			return 1;
+		} else if (o instanceof SimEndEvent) {
+			return -1;
+		}
+		return 0;
 	}
 
 	public abstract Stream<Integer> getPids();

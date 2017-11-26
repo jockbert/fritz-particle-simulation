@@ -75,7 +75,6 @@ public class BasicSimulatorTest implements WithAssert {
 			.wallAbsorbedMomentum(6);
 
 		assertEndState(expectedEnd, start);
-
 	}
 
 	private void assertEndState(SimState expectedEndState, SimState startState) {
