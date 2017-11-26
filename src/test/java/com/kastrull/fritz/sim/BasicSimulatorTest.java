@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.kastrull.fritz.physics.LinearPhysics;
 import com.kastrull.fritz.primitives.WithAssert;
 
-public class SimulatorTest implements WithAssert {
+public class BasicSimulatorTest implements WithAssert {
 
 	private Simulator cut = new BasicSimulator(new LinearPhysics());
 
@@ -43,12 +43,12 @@ public class SimulatorTest implements WithAssert {
 	@Test
 	public void testTwoWallHit() {
 		SimState start = stateTenByTenBox()
-			.addParticle(p(c(5, 5), c(1, 0)))
+			.addParticle(p(c(5, 5), c(0, 1)))
 			.targetTime(13);
 
 		SimState expectedEnd = start
 			.currentTime(13)
-			.particles(p(c(2, 5), c(1, 0)));
+			.particles(p(c(5, 2), c(0, 1)));
 
 		assertEndState(expectedEnd, start);
 	}
