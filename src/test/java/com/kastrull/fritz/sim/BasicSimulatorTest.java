@@ -98,9 +98,32 @@ public class BasicSimulatorTest implements WithAssert {
 		assertEndState(expected, start);
 	}
 
+	@Test
+	public void testTwoParticlesWithCornerCollision() {
+		// Example 3 from particle_sim_config
+
+		// Bug to solve: Clear out old queued events related
+		// particle when changed!!
+
+		SimState proto = stateBox(6, 4)
+			.targetTime(3);
+
+		SimState start = proto
+			.addParticle(p(c(1, 1), c(1, 1)))
+			.addParticle(p(c(5, 3), c(-1, -1)));
+
+		SimState expected = proto
+			.addParticle(p(c(2, 2), c(-1, -1)))
+			.addParticle(p(c(4, 2), c(1, 1)))
+			.currentTime(3)
+			.wallAbsorbedMomentum(8);
+
+		assertEndState(expected, start);
+	}
+
 	private void assertEndState(SimState expectedEndState, SimState startState) {
 		SimState endState = cut.simulate(startState);
-		assertEquals(expectedEndState, endState);
+		assertEquals(expectedEndState.toString(), endState.toString());
 	}
 
 	private SimState stateTenByTenBox() {
@@ -109,5 +132,13 @@ public class BasicSimulatorTest implements WithAssert {
 			.addWall(b(0, BY_Y))
 			.addWall(b(10, BY_X))
 			.addWall(b(10, BY_Y));
+	}
+
+	private SimState stateBox(int width, int height) {
+		return SimState.NULL
+			.addWall(b(0, BY_X))
+			.addWall(b(0, BY_Y))
+			.addWall(b(width, BY_X))
+			.addWall(b(height, BY_Y));
 	}
 }
