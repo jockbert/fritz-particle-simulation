@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.kastrull.fritz.physics.LinearPhysics;
+import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.WithAssert;
 
 public class BasicSimulatorTest implements WithAssert {
@@ -51,6 +52,27 @@ public class BasicSimulatorTest implements WithAssert {
 			.particles(p(c(5, 2), c(0, 1)));
 
 		assertEndState(expectedEnd, start);
+	}
+
+	@Test
+	public void testCornerCollisionReflex() {
+
+		// Will reach collision point (1,1) in 2 time units, and 2 more time
+		// units to reach the start point again, but with negated velocity.
+
+		Coord startPos = c(3, 5);
+		Coord startVelocity = c(-1, -2);
+
+		SimState start = stateTenByTenBox()
+			.addParticle(p(startPos, startVelocity))
+			.targetTime(4);
+
+		SimState expectedEnd = start
+			.currentTime(4)
+			.particles(p(startPos, startVelocity.negate()));
+
+		assertEndState(expectedEnd, start);
+
 	}
 
 	private void assertEndState(SimState expectedEndState, SimState startState) {
