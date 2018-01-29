@@ -4,3 +4,5 @@ build/
 .project
 .settings/
 /bin/
+/.apt_generated/
+/.factorypath

@@ -1,3 +1,9 @@
+plugins {
+  // Immutables
+  id "net.ltgt.apt" version "0.14"
+  id "net.ltgt.apt-eclipse" version "0.14"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
@@ -9,10 +15,18 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
+configurations {
+  apt
+}
+
 dependencies {
+    // Immutables
+    annotationProcessor  'org.immutables:value:2.5.5'
+    compileOnly 'org.immutables:value:2.5.5'
+
     compile 'com.github.jockbert:particle_sim_config:+'
     compile 'org.javatuples:javatuples:+'
-    compile  'com.codepoetics:protonpack:1.+'
+    compile 'com.codepoetics:protonpack:1.+'
 
     testCompile 'junit:junit:+'
     testCompile 'org.quicktheories:quicktheories:0.2+'
