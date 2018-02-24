@@ -26,7 +26,7 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 		Event<T> event = queue.poll();
 
 		Set<Integer> involving = event.involving();
-		Set<Integer> invalidated = recursivelyInvalidated(involving);
+		Set<Integer> invalidated = recursivelyFindInvalidated(involving);
 
 		double time = event.time();
 		T result = event.action().apply(time);
@@ -37,7 +37,7 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 			.invalidates(invalidated);
 	}
 
-	private Set<Integer> recursivelyInvalidated(Set<Integer> involving) {
+	private Set<Integer> recursivelyFindInvalidated(Set<Integer> involving) {
 		if (involving.isEmpty())
 			// recursion end criteria fulfilled
 			return Collections.emptySet();
@@ -55,7 +55,7 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 		invalidatedItems.removeAll(involving);
 
 		// invalidatedItems are the new involving, in next recursion step.
-		invalidatedItems.addAll(recursivelyInvalidated(invalidatedItems));
+		invalidatedItems.addAll(recursivelyFindInvalidated(invalidatedItems));
 
 		return invalidatedItems;
 	}

@@ -83,7 +83,7 @@ public class EventEngineTest {
 	}
 
 	/**
-	 * Description:
+	 * Description of some events:
 	 * <ul>
 	 * <li>E1 occurs at time 1 and involves item I1
 	 * <li>E2 occurs at time 2 and involves item I2
