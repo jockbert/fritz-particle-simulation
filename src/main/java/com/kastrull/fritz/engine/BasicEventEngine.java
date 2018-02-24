@@ -1,5 +1,6 @@
 package com.kastrull.fritz.engine;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -24,29 +25,43 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 	public Outcome<T> next() {
 		Event<T> event = queue.poll();
 
-		List<Event<T>> invalidatedEvents = queue.stream()
-			.filter(isInvalidatedBy(event))
-			.collect(Collectors.toList());
+		Set<Integer> involving = event.involving();
+		Set<Integer> invalidated = recursivelyInvalidated(involving);
 
-		queue.removeAll(invalidatedEvents);
+		double time = event.time();
+		T result = event.action().apply(time);
+
+		return Outcome
+			.of(time, result)
+			.involves(event.involving())
+			.invalidates(invalidated);
+	}
+
+	private Set<Integer> recursivelyInvalidated(Set<Integer> involving) {
+		if (involving.isEmpty())
+			// recursion end criteria fulfilled
+			return Collections.emptySet();
+
+		List<Event<T>> invalidatedEvents = queue.stream()
+			.filter(isInvalidatedBy(involving))
+			.collect(Collectors.toList());
 
 		Set<Integer> invalidatedItems = invalidatedEvents.stream()
 			.flatMap(i -> i.involving().stream())
 			.collect(Collectors.toSet());
 
-		invalidatedItems.removeAll(event.involving());
+		queue.removeAll(invalidatedEvents);
 
-		double time = event.time();
+		invalidatedItems.removeAll(involving);
 
-		T result = event.action().apply(time);
-		return Outcome
-			.of(time, result)
-			.involves(event.involving())
-			.invalidates(invalidatedItems);
+		// invalidatedItems are the new involving, in next recursion step.
+		invalidatedItems.addAll(recursivelyInvalidated(invalidatedItems));
+
+		return invalidatedItems;
 	}
 
-	public static <S> Predicate<Event<S>> isInvalidatedBy(Event<S> invalidator) {
-		return alpha -> invalidator.involving().stream()
+	public static <S> Predicate<Event<S>> isInvalidatedBy(Set<Integer> invalidators) {
+		return alpha -> invalidators.stream()
 			.anyMatch(i -> alpha.involving().contains(i));
 	}
 
