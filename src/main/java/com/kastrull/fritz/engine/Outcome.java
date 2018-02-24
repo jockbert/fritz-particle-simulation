@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.immutables.value.Value;
 
+/** The outcome of an executed {@link Event} in {@link EventEngine}. */
 @Value.Immutable(builder = false)
 @Value.Style(allMandatoryParameters = true, defaultAsDefault = true, with = "")
 public interface Outcome<R> {

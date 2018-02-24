@@ -5,6 +5,11 @@ import java.util.Set;
 
 import org.immutables.value.Value;
 
+/**
+ * An event contains of three things - a time, an action (i.e. an delayed
+ * calculation and result) and a set of related items. The action result can be
+ * useful for distinguishing between different types of events for items.
+ */
 @Value.Immutable(builder = false)
 @Value.Style(allMandatoryParameters = true, defaultAsDefault = true, with = "")
 public interface Event<R> {
