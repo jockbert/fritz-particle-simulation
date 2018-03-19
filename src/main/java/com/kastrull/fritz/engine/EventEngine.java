@@ -36,9 +36,15 @@ public interface EventEngine<R> extends
 		return new BasicEventEngine<S>();
 	}
 
-	void addEvent(double time, Action<R> eventAction, int... involving);
-
 	void addEvent(Event<R> event);
+
+	default void addEvent(double time, Action<R> eventAction, int... involving) {
+		addEvent(Event.of(time, eventAction).involving(involving));
+	}
+
+	default void addEvent(double time, R result, int... involving) {
+		addEvent(time, __ -> result, involving);
+	}
 
 	@Override
 	default Iterator<Outcome<R>> iterator() {

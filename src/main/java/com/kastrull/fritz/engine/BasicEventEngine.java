@@ -33,7 +33,7 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 
 		return Outcome
 			.of(time, result)
-			.involves(event.involving())
+			.involves(involving)
 			.invalidates(invalidated);
 	}
 
@@ -63,12 +63,6 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 	public static <S> Predicate<Event<S>> isInvalidatedBy(Set<Integer> invalidators) {
 		return alpha -> invalidators.stream()
 			.anyMatch(i -> alpha.involving().contains(i));
-	}
-
-	@Override
-	public void addEvent(double time, Action<T> action, int... involving) {
-		queue.add(
-			Event.of(time, action).involving(involving));
 	}
 
 	@Override
