@@ -28,7 +28,9 @@ import java.util.Iterator;
  * to item I1 via event E5. For simplicity also event E3 is invalidated, despite
  * occurring before E5. I8 is indirectly related to I1 via events E5 and E7.
  */
-public interface EventEngine<R> extends Iterator<Outcome<R>> {
+public interface EventEngine<R> extends
+		Iterator<Outcome<R>>,
+		Iterable<Outcome<R>> {
 
 	static <S> EventEngine<S> create() {
 		return new BasicEventEngine<S>();
@@ -37,4 +39,9 @@ public interface EventEngine<R> extends Iterator<Outcome<R>> {
 	void addEvent(double time, Action<R> eventAction, int... involving);
 
 	void addEvent(Event<R> event);
+
+	@Override
+	default Iterator<Outcome<R>> iterator() {
+		return this;
+	}
 }
