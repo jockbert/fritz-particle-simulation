@@ -78,7 +78,7 @@ public abstract class SimulatorTest {
 	@Test
 	public void testParticleCollision() {
 
-		// 3 4 5 6 7
+		// 3_ 4_ 5_ 6_ 7_
 		// a> .. .. b. ..
 		// .. a. .. .. b>
 
@@ -99,9 +99,6 @@ public abstract class SimulatorTest {
 	@Test
 	public void testTwoParticlesWithCornerCollision() {
 		// Example 3 from particle_sim_config
-
-		// Bug to solve: Clear out old queued events related
-		// particle when changed!!
 
 		SimState proto = stateBox(6, 4)
 			.targetTime(3);
