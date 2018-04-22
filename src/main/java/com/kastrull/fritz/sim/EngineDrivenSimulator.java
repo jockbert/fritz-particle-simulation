@@ -7,6 +7,7 @@ import com.kastrull.fritz.engine.Outcome;
 import com.kastrull.fritz.physics.LinearPhysics;
 import com.kastrull.fritz.physics.Physics;
 import com.kastrull.fritz.primitives.Border;
+import com.kastrull.fritz.primitives.Interaction;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.primitives.WallInteraction;
 
@@ -33,6 +34,8 @@ public class EngineDrivenSimulator implements Simulator {
 
 		addAllWallHits(state);
 
+		addAllParticleHits(state);
+
 		for (Outcome<Event> oc : engine) {
 
 			Event event = oc.result();
@@ -43,6 +46,7 @@ public class EngineDrivenSimulator implements Simulator {
 				return endState(state);
 
 			case WALL_HIT:
+			case PARTICLE_HIT:
 
 				oc
 					.involves()
@@ -67,6 +71,47 @@ public class EngineDrivenSimulator implements Simulator {
 
 	private void initRegister(SimState state) {
 		particles = new Register(state.particles(), state.currentTime());
+	}
+
+	private void addAllParticleHits(SimState state) {
+		particles.ids().forEach(pId -> addParticleHit(pId, state.currentTime()));
+	}
+
+	private void addParticleHit(Integer particleId, double currentTime) {
+		Particle particle = idToParticle(particleId, currentTime);
+
+		particles
+			.ids()
+			.filter(otherId -> otherId != particleId)
+			.forEach(otherParticleId -> {
+				Particle otherParticle = particles.getAtTime(otherParticleId, currentTime);
+
+				PHY.collisionTime(particle, otherParticle)
+					.ifPresent(hitTime -> engine
+						.addEvent(
+							currentTime + hitTime,
+							particleHitAction(particleId, otherParticleId),
+							particleId, otherParticleId));
+			});
+	}
+
+	private Action<Event> particleHitAction(Integer pId1, Integer pId2) {
+
+		return wallHitTime -> {
+			Particle p1Before = idToParticle(pId1, wallHitTime);
+			Particle p2Before = idToParticle(pId2, wallHitTime);
+
+			Interaction i = PHY.interact(p1Before, p2Before);
+
+			// update changed particle after wall collisions
+			particles.particles.set(pId1, i.p1);
+			particles.particles.set(pId2, i.p2);
+
+			particles.times[pId1] = wallHitTime;
+			particles.times[pId2] = wallHitTime;
+
+			return Event.PARTICLE_HIT;
+		};
 	}
 
 	private void addAllWallHits(SimState state) {
@@ -120,5 +165,5 @@ public class EngineDrivenSimulator implements Simulator {
 }
 
 enum Event {
-	WALL_HIT, SIM_END
+	WALL_HIT, SIM_END, PARTICLE_HIT
 }
