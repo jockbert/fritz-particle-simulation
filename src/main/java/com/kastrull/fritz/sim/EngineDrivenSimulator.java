@@ -1,9 +1,5 @@
 package com.kastrull.fritz.sim;
 
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.DoubleStream;
-
 import com.kastrull.fritz.engine.Action;
 import com.kastrull.fritz.engine.BasicEventEngine;
 import com.kastrull.fritz.engine.EventEngine;
@@ -109,12 +105,6 @@ public class EngineDrivenSimulator implements Simulator {
 
 	private Particle idToParticle(Integer particleId, double currentTime) {
 		return particles.getAtTime(particleId, currentTime);
-	}
-
-	private Function<Optional<Double>, DoubleStream> toDoubleStream() {
-		return maybeDouble -> maybeDouble.isPresent()
-				? DoubleStream.of(maybeDouble.get())
-				: DoubleStream.empty();
 	}
 
 	private void addSimulationEnd(SimState state) {
