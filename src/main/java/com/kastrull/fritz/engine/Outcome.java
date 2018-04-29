@@ -22,7 +22,8 @@ public interface Outcome<R> {
 		return Collections.emptySet();
 	}
 
-	static <S> ImmutableOutcome<S> of(double atTime, S value) {
-		return ImmutableOutcome.<S>of(atTime, value);
+	/** Creation convenience. */
+	static <R2> ImmutableOutcome<R2> of(double atTime, R2 value) {
+		return ImmutableOutcome.<R2>of(atTime, value);
 	}
 }

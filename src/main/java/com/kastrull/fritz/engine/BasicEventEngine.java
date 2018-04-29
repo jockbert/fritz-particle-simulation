@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 
 public class BasicEventEngine<T> implements EventEngine<T> {
 
-	private static Comparator<Event<?>> ORDER_BY_TIME = (o1, o2) -> Double.valueOf(o1.time())
+	private static Comparator<Event<?>> ORDER_BY_TIME = (o1, o2) -> Double
+		.valueOf(o1.time())
 		.compareTo(o2.time());
 
 	Queue<Event<T>> queue = new PriorityQueue<>(ORDER_BY_TIME);
@@ -29,7 +30,7 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 		Set<Integer> invalidated = recursivelyFindInvalidated(involving);
 
 		double time = event.time();
-		T result = event.action().apply(time);
+		T result = event.result();
 
 		return Outcome
 			.of(time, result)

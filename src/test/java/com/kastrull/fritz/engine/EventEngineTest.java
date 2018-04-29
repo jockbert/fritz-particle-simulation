@@ -9,30 +9,6 @@ import org.junit.Test;
 public class EventEngineTest {
 
 	@Test
-	public void testCircularEventsUsingTomatoDecay() {
-
-		EventEngine<Integer> engine = EventEngine.create();
-
-		final Action<Integer> tomatoDecay = new Action<Integer>() {
-			int freshness = 2;
-
-			@Override
-			public Integer apply(Double time) {
-				if (freshness > 0)
-					engine.addEvent(time + 0.2, this);
-				return freshness--;
-			}
-		};
-
-		engine.addEvent(1.0, tomatoDecay);
-
-		assertNext(engine, 1.0, 2);
-		assertNext(engine, 1.2, 1);
-		assertNext(engine, 1.4, 0);
-		assertStop(engine);
-	}
-
-	@Test
 	public void testInterceptingEventsUsingHareAndTurtle() {
 
 		EventEngine<String> engine = EventEngine.create();
@@ -43,12 +19,12 @@ public class EventEngineTest {
 
 		engine.addEvent(
 			12.3,
-			time -> "turtle wins race",
+			"turtle wins race",
 			turtle, winner);
 
 		engine.addEvent(
 			7.8,
-			time -> "hare intercepts turtle and wins race",
+			"hare intercepts turtle and wins race",
 			hare, winner);
 
 		assertNext(
@@ -71,9 +47,9 @@ public class EventEngineTest {
 		int theEarthRevolves = 1;
 		int throwADice = 2;
 
-		engine.addEvent(1.1, __ -> true, eatApplePie);
-		engine.addEvent(3.3, __ -> true, throwADice);
-		engine.addEvent(2.2, __ -> false, theEarthRevolves);
+		engine.addEvent(1.1, true, eatApplePie);
+		engine.addEvent(3.3, true, throwADice);
+		engine.addEvent(2.2, false, theEarthRevolves);
 
 		assertNext(engine, Outcome.of(1.1, true).involves(eatApplePie));
 		assertNext(engine, Outcome.of(2.2, false).involves(theEarthRevolves));
@@ -111,14 +87,14 @@ public class EventEngineTest {
 		int I3 = 3;
 		int I8 = 8;
 
-		engine.addEvent(1, __ -> true, I1);
-		engine.addEvent(2, __ -> true, I2);
-		engine.addEvent(3, __ -> true, I3);
-		engine.addEvent(4, __ -> true, I1);
-		engine.addEvent(5, __ -> true, I1, I3);
-		engine.addEvent(6, __ -> true);
-		engine.addEvent(7, __ -> true, I3, I8);
-		engine.addEvent(8, __ -> true, I8);
+		engine.addEvent(1, true, I1);
+		engine.addEvent(2, true, I2);
+		engine.addEvent(3, true, I3);
+		engine.addEvent(4, true, I1);
+		engine.addEvent(5, true, I1, I3);
+		engine.addEvent(6, true);
+		engine.addEvent(7, true, I3, I8);
+		engine.addEvent(8, true, I8);
 
 		assertNext(engine, Outcome.of(1, true).involves(I1).invalidates(I3, I8));
 		assertNext(engine, Outcome.of(2, true).involves(I2));
@@ -136,10 +112,6 @@ public class EventEngineTest {
 		assertEquals("result for actual " + actual, expected.result(), actual.result());
 		assertEquals("involves for actual " + actual, expected.involves(), actual.involves());
 		assertEquals("invalidates for actual " + actual, expected.invalidates(), actual.invalidates());
-	}
-
-	private <R> void assertNext(EventEngine<R> engine, double time, R result) {
-		assertNext(engine, Outcome.of(time, result));
 	}
 
 	private <R> void assertStop(EventEngine<R> engine) {

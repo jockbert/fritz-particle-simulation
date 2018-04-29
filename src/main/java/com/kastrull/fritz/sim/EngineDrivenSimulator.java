@@ -1,6 +1,7 @@
 package com.kastrull.fritz.sim;
 
-import com.kastrull.fritz.engine.Action;
+import java.util.Optional;
+
 import com.kastrull.fritz.engine.BasicEventEngine;
 import com.kastrull.fritz.engine.EventEngine;
 import com.kastrull.fritz.engine.Outcome;
@@ -15,7 +16,7 @@ public class EngineDrivenSimulator implements Simulator {
 
 	private static Physics PHY = new LinearPhysics();
 
-	private EventEngine<Event> engine = new BasicEventEngine<>();
+	private EventEngine<EventAndAction> engine = new BasicEventEngine<>();
 
 	private Register particles;
 
@@ -36,14 +37,27 @@ public class EngineDrivenSimulator implements Simulator {
 
 		addAllParticleHits(state);
 
-		for (Outcome<Event> oc : engine) {
+		Optional<Double> endTime = Optional.empty();
 
-			Event event = oc.result();
+		simloop: for (Outcome<EventAndAction> oc : engine) {
+
+			boolean isAfterSimEndTime = endTime.isPresent() && endTime.get() < oc.time();
+			if (isAfterSimEndTime)
+				break simloop;
+
+			// Result has side effects, so must be executed after
+			// breaking simulation loop.
+			EventAndAction ena = oc.result();
+			Event event = ena.event;
+			ena.action.run();
 
 			switch (event) {
 
 			case SIM_END:
-				return endState(state);
+				// Continue simulation to consume all
+				// events happening at the same time.
+				endTime = Optional.of(Double.valueOf(oc.time()));
+				break;
 
 			case WALL_HIT:
 			case PARTICLE_HIT:
@@ -62,7 +76,7 @@ public class EngineDrivenSimulator implements Simulator {
 			}
 		}
 
-		return null;
+		return endState(state);
 	}
 
 	private void initWalls(SimState state) {
@@ -91,13 +105,23 @@ public class EngineDrivenSimulator implements Simulator {
 					.ifPresent(hitTime -> engine
 						.addEvent(
 							currentTime + hitTime,
-							particleHitAction(particleId, otherParticleId),
+							ena(
+								Event.PARTICLE_HIT,
+								particleHitAction(particleId, otherParticleId, currentTime + hitTime)),
 							particleId, otherParticleId));
 			});
 	}
 
-	private Action<Event> particleHitAction(Integer pId1, Integer pId2) {
-		return particleHitTime -> {
+	private EventAndAction ena(Event e, Runnable a) {
+		return new EventAndAction(e, a);
+	}
+
+	private Runnable particleHitAction(
+			Integer pId1,
+			Integer pId2,
+			double particleHitTime) {
+
+		return () -> {
 			Particle p1Before = idToParticle(pId1, particleHitTime);
 			Particle p2Before = idToParticle(pId2, particleHitTime);
 
@@ -109,8 +133,6 @@ public class EngineDrivenSimulator implements Simulator {
 
 			particles.times[pId1] = particleHitTime;
 			particles.times[pId2] = particleHitTime;
-
-			return Event.PARTICLE_HIT;
 		};
 	}
 
@@ -129,12 +151,17 @@ public class EngineDrivenSimulator implements Simulator {
 				.ifPresent(hitTime -> engine
 					.addEvent(
 						currentTime + hitTime,
-						wallHitAction(particleId, wall),
+						ena(Event.WALL_HIT,
+							wallHitAction(particleId, wall, currentTime + hitTime)),
 						particleId)));
 	}
 
-	private Action<Event> wallHitAction(final Integer particleId, final Border wall) {
-		return wallHitTime -> {
+	private Runnable wallHitAction(
+			final Integer particleId,
+			final Border wall,
+			final double wallHitTime) {
+
+		return () -> {
 			Particle particleBefore = idToParticle(particleId, wallHitTime);
 			WallInteraction wi = PHY.interactWall(particleBefore, wall);
 
@@ -143,8 +170,6 @@ public class EngineDrivenSimulator implements Simulator {
 			// update changed particle after wall collisions
 			particles.particles.set(particleId, wi.p);
 			particles.times[particleId] = wallHitTime;
-
-			return Event.WALL_HIT;
 		};
 	}
 
@@ -153,7 +178,12 @@ public class EngineDrivenSimulator implements Simulator {
 	}
 
 	private void addSimulationEnd(SimState state) {
-		engine.addEvent(state.targetTime(), Event.SIM_END);
+		engine.addEvent(
+			state.targetTime(),
+			ena(
+				Event.SIM_END,
+				() -> {
+					/* do nothing */ }));
 	}
 
 	private SimState endState(SimState state) {
@@ -166,4 +196,14 @@ public class EngineDrivenSimulator implements Simulator {
 
 enum Event {
 	WALL_HIT, SIM_END, PARTICLE_HIT
+}
+
+class EventAndAction {
+	public final Event event;
+	public final Runnable action;
+
+	EventAndAction(Event e, Runnable a) {
+		this.event = e;
+		this.action = a;
+	}
 }

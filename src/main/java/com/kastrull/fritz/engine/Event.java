@@ -15,13 +15,14 @@ import org.immutables.value.Value;
 public interface Event<R> {
 	double time();
 
-	Action<R> action();
+	R result();
 
 	default Set<Integer> involving() {
 		return Collections.emptySet();
 	}
 
-	static <S> ImmutableEvent<S> of(double atTime, Action<S> action) {
-		return ImmutableEvent.<S>of(atTime, action);
+	/** Creation convenience. */
+	static <R2> ImmutableEvent<R2> of(double atTime, R2 result) {
+		return ImmutableEvent.<R2>of(atTime, result);
 	}
 }
