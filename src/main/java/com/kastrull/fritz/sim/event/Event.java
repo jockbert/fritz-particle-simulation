@@ -2,6 +2,7 @@ package com.kastrull.fritz.sim.event;
 
 import java.util.stream.Stream;
 
+@Deprecated
 abstract public class Event implements Comparable<Event> {
 
 	private final double atTime;
