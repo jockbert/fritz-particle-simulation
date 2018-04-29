@@ -50,10 +50,10 @@ public class EngineDrivenSimulator implements Simulator {
 
 				oc
 					.involves()
-					.forEach(
-						pid ->
-						// TODO Add both wall hit and particle collision
-						addWallHit(pid, oc.time()));
+					.forEach(pid -> {
+						addParticleHit(pid, oc.time());
+						addWallHit(pid, oc.time());
+					});
 
 				break;
 
@@ -86,7 +86,8 @@ public class EngineDrivenSimulator implements Simulator {
 			.forEach(otherParticleId -> {
 				Particle otherParticle = particles.getAtTime(otherParticleId, currentTime);
 
-				PHY.collisionTime(particle, otherParticle)
+				PHY
+					.collisionTime(particle, otherParticle)
 					.ifPresent(hitTime -> engine
 						.addEvent(
 							currentTime + hitTime,
@@ -96,10 +97,9 @@ public class EngineDrivenSimulator implements Simulator {
 	}
 
 	private Action<Event> particleHitAction(Integer pId1, Integer pId2) {
-
-		return wallHitTime -> {
-			Particle p1Before = idToParticle(pId1, wallHitTime);
-			Particle p2Before = idToParticle(pId2, wallHitTime);
+		return particleHitTime -> {
+			Particle p1Before = idToParticle(pId1, particleHitTime);
+			Particle p2Before = idToParticle(pId2, particleHitTime);
 
 			Interaction i = PHY.interact(p1Before, p2Before);
 
@@ -107,8 +107,8 @@ public class EngineDrivenSimulator implements Simulator {
 			particles.particles.set(pId1, i.p1);
 			particles.particles.set(pId2, i.p2);
 
-			particles.times[pId1] = wallHitTime;
-			particles.times[pId2] = wallHitTime;
+			particles.times[pId1] = particleHitTime;
+			particles.times[pId2] = particleHitTime;
 
 			return Event.PARTICLE_HIT;
 		};
