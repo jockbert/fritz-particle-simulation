@@ -15,6 +15,9 @@ public abstract class SimulatorTest {
 
 	protected abstract Simulator cut();
 
+	// TODO test for wall collision before sim end.
+	// TODO take care of executing particle collisions before exiting
+
 	@Test
 	public void testEmpty() {
 		SimState start = stateTenByTenBox()
@@ -92,6 +95,33 @@ public abstract class SimulatorTest {
 			.addParticle(p(c(7, 5), c(1, 0)))
 			.targetTime(2)
 			.currentTime(2);
+
+		assertEndState(expected, start);
+	}
+
+	@Test
+	public void testPendulumWave() {
+
+		// 2_ 3_ 4_ 5_ 6_ 7_ 8_ 9_
+		// a> .. .. b. .. .. c. ..
+		// .. a. .. .. b. .. .. c>
+
+		SimState proto = stateBox(100, 100)
+			.targetTime(3);
+
+		Coord moving = c(1, 0);
+		Coord stationary = c(0, 0);
+
+		SimState start = proto
+			.addParticle(p(c(2, 10), moving))
+			.addParticle(p(c(5, 10), stationary))
+			.addParticle(p(c(8, 10), stationary));
+
+		SimState expected = proto
+			.addParticle(p(c(3, 10), stationary))
+			.addParticle(p(c(6, 10), stationary))
+			.addParticle(p(c(9, 10), moving))
+			.currentTime(3);
 
 		assertEndState(expected, start);
 	}
