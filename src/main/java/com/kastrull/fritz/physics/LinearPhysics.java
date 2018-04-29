@@ -23,6 +23,10 @@ public final class LinearPhysics implements Physics {
 	@Override
 	public Optional<Double> collisionTime(Particle p1, Particle p2) {
 
+		// Only care about decreasing distance between particles
+		if (!isDistanceDecreasing(p1, p2))
+			return Optional.empty();
+
 		// Solving polynomial of when in time there are 2 radius distances
 		// between particles, i.e. collisions. Filtering out roots (solutions)
 		// in negative time, i.e. time in history. Selects the first occurrence
@@ -59,6 +63,42 @@ public final class LinearPhysics implements Physics {
 		Particle after1 = before1.addVelocity(velocityChange);
 		Particle after2 = before2.addVelocity(velocityChange.negate());
 		return Interaction.i(after1, after2);
+	}
+
+	/**
+	 * TODO better explanation in this comment
+	 *
+	 * Visible for testing.
+	 *
+	 * let a(t) be first particles x-position as expression of time
+	 *
+	 * let b(t) be second particles x-position as expression of time
+	 *
+	 * let f(t) be first particles y-position as expression of time
+	 *
+	 * let g(t) be second particles y-position as expression of time
+	 *
+	 * abs(t) = sqrt((a(t)-b(t))^2+(f(t)-g(t))^2)
+	 *
+	 * abs^2(t) = (a(t)-b(t))^2+(f(t)-g(t))^2
+	 *
+	 * (abs^2)'(t) = 2(a(t)-b(t))(a'(t)-b'(x)) + 2(f(t)-g(t))(f'(t)-g'(t))
+	 *
+	 * a(t) = a.pos.x + a.vel.x * t => a(0) = a.pos.x
+	 *
+	 * a'(t) = a.vel.x => a'(0) = a.vel.x
+	 *
+	 * distanceChangePow2Times2 = posDiff.x * velDiff.x + posDiff.y * velDiff.y
+	 */
+	boolean isDistanceDecreasing(Particle a, Particle b) {
+
+		Coord posDiff = a.pos.subtract(b.pos);
+		Coord velDiff = a.vel.subtract(b.vel);
+
+		double distanceChangePow2Times2 = posDiff.x * velDiff.x
+				+ posDiff.y * velDiff.y;
+
+		return distanceChangePow2Times2 < 0;
 	}
 
 	private double netExchangeOfMomentum(Coord d, Particle before1, Particle before2) {

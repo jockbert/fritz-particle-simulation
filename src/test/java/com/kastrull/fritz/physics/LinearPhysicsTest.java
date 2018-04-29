@@ -4,6 +4,7 @@ import static com.kastrull.fritz.primitives.Border.b;
 import static com.kastrull.fritz.primitives.Coord.c;
 import static com.kastrull.fritz.primitives.Particle.p;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,7 +27,7 @@ import com.kastrull.fritz.primitives.WithQtAndPrimitives;
 public class LinearPhysicsTest
 		implements WithQtAndPrimitives, WithAssert {
 
-	Physics phy = new LinearPhysics();
+	LinearPhysics phy = new LinearPhysics();
 
 	@Test
 	public void collisionTime_WithOtherParticle() {
@@ -52,6 +53,28 @@ public class LinearPhysicsTest
 
 		assertTrue(actualTime.isPresent());
 		assertApprox(expectedTime, actualTime.get());
+	}
+
+	@Test
+	public void collisionTime_detectClosingIn() {
+		Particle p1 = p(c(0, 1), c(0, -2));
+		Particle p2 = p(c(0, -1), c(0, 2));
+
+		Optional<Double> actualTime = phy.collisionTime(p1, p2);
+
+		assertTrue(phy.isDistanceDecreasing(p1, p2));
+
+		assertTrue("Expecting some collision but got " + actualTime, actualTime.isPresent());
+	}
+
+	@Test
+	public void collisionTime_detectMovingAway() {
+		Particle p1 = p(c(2, 0), c(1, 0));
+		Particle p2 = p(c(0, 0), c(0, 0));
+
+		Optional<Double> actualTime = phy.collisionTime(p1, p2);
+
+		assertFalse("Expecting no collision but got " + actualTime, actualTime.isPresent());
 	}
 
 	@Test
