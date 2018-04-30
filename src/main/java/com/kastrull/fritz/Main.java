@@ -6,15 +6,16 @@ import java.util.stream.Collectors;
 import com.kastrull.fritz.physics.LinearPhysics;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Particle;
-import com.kastrull.fritz.sim.BasicSimulator;
+import com.kastrull.fritz.sim.EngineDrivenSimulator;
 import com.kastrull.fritz.sim.SimState;
+import com.kastrull.fritz.sim.Simulator;
 import com.kastrull.particle_sim_config.Config;
 import com.kastrull.particle_sim_config.ConfigReader;
 
 public class Main {
 
 	private static final ConfigReader READER = ConfigReader.create();
-	private static final BasicSimulator SIM = new BasicSimulator(new LinearPhysics());
+	private static final Simulator SIM = new EngineDrivenSimulator(new LinearPhysics());
 	private static SimState state;
 
 	public static void main(String[] args) throws Exception {
