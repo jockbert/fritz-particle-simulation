@@ -191,7 +191,7 @@ public class EngineDrivenSimulator implements Simulator {
 	}
 
 	private SimState endState(SimState state) {
-		return state
+		return SimState.mut(state)
 			.currentTime(state.targetTime())
 			.wallAbsorbedMomentum(totalMomentum)
 			.particles(particles.toList(state.targetTime()));

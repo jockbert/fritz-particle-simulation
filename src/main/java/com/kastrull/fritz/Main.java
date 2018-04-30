@@ -1,5 +1,7 @@
 package com.kastrull.fritz;
 
+import static com.kastrull.fritz.sim.SimState.mut;
+
 import java.io.File;
 import java.util.stream.Collectors;
 
@@ -7,6 +9,7 @@ import com.kastrull.fritz.physics.LinearPhysics;
 import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Particle;
 import com.kastrull.fritz.sim.EngineDrivenSimulator;
+import com.kastrull.fritz.sim.ImmutableSimState;
 import com.kastrull.fritz.sim.SimState;
 import com.kastrull.fritz.sim.Simulator;
 import com.kastrull.particle_sim_config.Config;
@@ -47,7 +50,7 @@ public class Main {
 
 		config.results.forEach(configResult -> {
 
-			state = state.targetTime(configResult.time);
+			state = mut(state).targetTime(configResult.time);
 			println("");
 			println("Simulating time from " + state.currentTime() + " to " + state.targetTime() + " ...");
 			println("");
@@ -63,7 +66,7 @@ public class Main {
 	}
 
 	private static SimState conf2fritz(Config config) {
-		SimState state = SimState
+		ImmutableSimState state = SimState
 			.createWithWalls(config.area.x, config.area.y);
 
 		state = state.particles(

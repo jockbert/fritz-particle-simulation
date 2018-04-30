@@ -1,186 +1,68 @@
 package com.kastrull.fritz.sim;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.immutables.value.Value;
+
+import com.kastrull.fritz.engine.Event;
+import com.kastrull.fritz.engine.EventEngine;
 import com.kastrull.fritz.primitives.Border;
-import com.kastrull.fritz.primitives.Coord;
 import com.kastrull.fritz.primitives.Particle;
 
-public final class SimState {
+/** The outcome of an executed {@link Event} in {@link EventEngine}. */
+@Value.Immutable(builder = false)
+@Value.Style(allMandatoryParameters = true, defaultAsDefault = true, with = "")
+public interface SimState {
 
-	public static final SimState NULL = new SimState(new ArrayList<>(), new ArrayList<>(), 0, 0, 0);
-
-	private final List<Particle> particles;
-	private final List<Border> walls;
-	private final double wallAbsorbedMomentum;
-	private final double targetTime;
-	private final double currentTime;
-
-	private SimState(
-			List<Particle> particles,
-			List<Border> walls,
-			double wallAbsorbedMomentum,
-			double targetTime,
-			double currentTime) {
-
-		this.particles = particles;
-		this.walls = walls;
-		this.wallAbsorbedMomentum = wallAbsorbedMomentum;
-		this.targetTime = targetTime;
-		this.currentTime = currentTime;
+	/** Creation convenience. */
+	static ImmutableSimState of() {
+		return ImmutableSimState.of();
 	}
 
-	public static SimState createWithWalls(double width, double height) {
-		return NULL
-			.addWall(Border.b(0, Border.BY_X))
-			.addWall(Border.b(width, Border.BY_X))
-			.addWall(Border.b(0, Border.BY_Y))
-			.addWall(Border.b(height, Border.BY_Y));
+	public static ImmutableSimState createWithWalls(double width, double height) {
+		return of().walls(
+			Border.b(0, Border.BY_X),
+			Border.b(width, Border.BY_X),
+			Border.b(0, Border.BY_Y),
+			Border.b(height, Border.BY_Y));
 	}
 
-	public SimState addWall(Border b) {
-		return new SimState(
-			particles,
-			add(walls, b),
-			wallAbsorbedMomentum,
-			targetTime,
-			currentTime);
+	/**
+	 * Downcast to enable mutation or copy data into new
+	 * {@link ImmutableSimState}.
+	 */
+	@Value.Auxiliary
+	static ImmutableSimState mut(SimState ss) {
+		if (ss instanceof ImmutableSimState)
+			return (ImmutableSimState) ss;
+		else
+			return of()
+				.currentTime(ss.currentTime())
+				.targetTime(ss.targetTime())
+				.wallAbsorbedMomentum(ss.wallAbsorbedMomentum())
+				.particles(ss.particles())
+				.walls(ss.walls());
 	}
 
-	private <T> List<T> add(List<T> ts, T t) {
-		ArrayList<T> newTs = new ArrayList<>(ts);
-		newTs.add(t);
-		return newTs;
+	default List<Particle> particles() {
+		return Collections.emptyList();
 	}
 
-	public SimState addParticle(double posX, double posY, double velX, double velY) {
-		return addParticle(Particle.p(Coord.c(posX, posY), Coord.c(velX, velY)));
+	default List<Border> walls() {
+		return Collections.emptyList();
 	}
 
-	public SimState addParticle(Particle p) {
-		return new SimState(
-			add(particles, p),
-			walls,
-			wallAbsorbedMomentum,
-			targetTime,
-			currentTime);
+	default double wallAbsorbedMomentum() {
+		return 0.0;
 	}
 
-	public SimState particles(List<Particle> ps) {
-		return new SimState(
-			ps,
-			walls,
-			wallAbsorbedMomentum,
-			targetTime,
-			currentTime);
+	default double targetTime() {
+		return 0.0;
 	}
 
-	public SimState particles(Particle... ps) {
-		return particles(Arrays.asList(ps));
+	default double currentTime() {
+		return 0.0;
 	}
 
-	public List<Particle> particles() {
-		return particles;
-	}
-
-	public SimState walls(List<Border> ws) {
-		return new SimState(
-			particles,
-			ws,
-			wallAbsorbedMomentum,
-			targetTime,
-			currentTime);
-	}
-
-	public List<Border> walls() {
-		return walls;
-	}
-
-	public double wallAbsorbedMomentum() {
-		return wallAbsorbedMomentum;
-	}
-
-	public double targetTime() {
-		return targetTime;
-	}
-
-	public double currentTime() {
-		return currentTime;
-	}
-
-	public SimState currentTime(double ct) {
-		return new SimState(
-			particles,
-			walls,
-			wallAbsorbedMomentum,
-			targetTime,
-			ct);
-	}
-
-	public SimState targetTime(double tt) {
-		return new SimState(
-			particles,
-			walls,
-			wallAbsorbedMomentum,
-			tt,
-			currentTime);
-	}
-
-	public SimState wallAbsorbedMomentum(double am) {
-		return new SimState(
-			particles,
-			walls,
-			am,
-			targetTime,
-			currentTime);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(currentTime);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((particles == null) ? 0 : particles.hashCode());
-		temp = Double.doubleToLongBits(targetTime);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(wallAbsorbedMomentum);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((walls == null) ? 0 : walls.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SimState other = (SimState) obj;
-		if (Double.doubleToLongBits(currentTime) != Double.doubleToLongBits(other.currentTime))
-			return false;
-		if (particles == null) {
-			if (other.particles != null)
-				return false;
-		} else if (!particles.equals(other.particles))
-			return false;
-		if (Double.doubleToLongBits(targetTime) != Double.doubleToLongBits(other.targetTime))
-			return false;
-		if (Double.doubleToLongBits(wallAbsorbedMomentum) != Double.doubleToLongBits(other.wallAbsorbedMomentum))
-			return false;
-		if (walls != null)
-			return walls.equals(other.walls);
-		return other.walls == null;
-	}
-
-	@Override
-	public String toString() {
-		return "SimState(particles=" + particles + ", walls=" + walls + ", wallAbsorbedMomentum="
-				+ wallAbsorbedMomentum + ", targetTime=" + targetTime + ", currentTime=" + currentTime + ")";
-	}
 }

@@ -24,20 +24,6 @@ public class SimStateGeneratorTest implements WithQuickTheories, WithSimSources,
 	private static final double FIFTY_PERCENT = 0.50;
 
 	@Test
-	@SuppressWarnings("unused")
-	public void use() {
-		SimStateGenerator generator = SimStateGenerator.create(SimSetup.NULL);
-		SimState state = generator.generateState();
-
-		List<Border> walls = state.walls();
-		List<Particle> particles = state.particles();
-
-		double currentTime = state.currentTime();
-		double targetTime = state.targetTime();
-		double wallAbsorbedMomentum = state.wallAbsorbedMomentum();
-	}
-
-	@Test
 	public void currentTimeStartsAtZero() {
 		forAllSimSetups()
 			.check(setup -> genState(setup).currentTime() == 0);
