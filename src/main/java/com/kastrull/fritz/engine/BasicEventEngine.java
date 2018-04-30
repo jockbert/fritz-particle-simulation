@@ -26,11 +26,10 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 	public Outcome<T> next() {
 		Event<T> event = queue.poll();
 
-		Set<Integer> involving = event.involving();
-		Set<Integer> invalidated = recursivelyFindInvalidated(involving);
-
 		double time = event.time();
 		T result = event.result();
+		Set<Integer> involving = event.involving();
+		Set<Integer> invalidated = recursivelyFindInvalidated(involving);
 
 		return Outcome
 			.of(time, result)
