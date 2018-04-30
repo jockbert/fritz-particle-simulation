@@ -14,7 +14,7 @@ import com.kastrull.fritz.primitives.WallInteraction;
 
 public class EngineDrivenSimulator implements Simulator {
 
-	private static Physics PHY = new LinearPhysics();
+	private Physics physics;
 
 	private EventEngine<EventAndAction> engine = new BasicEventEngine<>();
 
@@ -23,6 +23,10 @@ public class EngineDrivenSimulator implements Simulator {
 	private SimState initialState;
 
 	private double totalMomentum = 0;
+
+	public EngineDrivenSimulator(LinearPhysics linearPhysics) {
+		this.physics = linearPhysics;
+	}
 
 	@Override
 	public SimState simulate(SimState state) {
@@ -100,7 +104,7 @@ public class EngineDrivenSimulator implements Simulator {
 			.forEach(otherParticleId -> {
 				Particle otherParticle = particles.getAtTime(otherParticleId, currentTime);
 
-				PHY
+				physics
 					.collisionTime(particle, otherParticle)
 					.ifPresent(hitTime -> engine
 						.addEvent(
@@ -125,7 +129,7 @@ public class EngineDrivenSimulator implements Simulator {
 			Particle p1Before = idToParticle(pId1, particleHitTime);
 			Particle p2Before = idToParticle(pId2, particleHitTime);
 
-			Interaction i = PHY.interact(p1Before, p2Before);
+			Interaction i = physics.interact(p1Before, p2Before);
 
 			// update changed particle after wall collisions
 			particles.particles.set(pId1, i.p1);
@@ -146,7 +150,7 @@ public class EngineDrivenSimulator implements Simulator {
 		initialState
 			.walls()
 			.stream()
-			.forEach(wall -> PHY
+			.forEach(wall -> physics
 				.collisionTimeWall(particle, wall)
 				.ifPresent(hitTime -> engine
 					.addEvent(
@@ -163,7 +167,7 @@ public class EngineDrivenSimulator implements Simulator {
 
 		return () -> {
 			Particle particleBefore = idToParticle(particleId, wallHitTime);
-			WallInteraction wi = PHY.interactWall(particleBefore, wall);
+			WallInteraction wi = physics.interactWall(particleBefore, wall);
 
 			totalMomentum += wi.wallMomentum.distance();
 
