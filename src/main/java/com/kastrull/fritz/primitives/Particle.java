@@ -1,5 +1,7 @@
 package com.kastrull.fritz.primitives;
 
+import java.util.Objects;
+
 import com.kastrull.fritz.Laws;
 
 public class Particle implements Approx<Particle> {
@@ -22,33 +24,18 @@ public class Particle implements Approx<Particle> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((pos == null) ? 0 : pos.hashCode());
-		result = prime * result + ((vel == null) ? 0 : vel.hashCode());
-		return result;
+		return Objects.hash(pos, vel);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Particle other = (Particle) obj;
-		if (pos == null) {
-			if (other.pos != null)
-				return false;
-		} else if (!pos.equals(other.pos))
-			return false;
-		if (vel == null) {
-			if (other.vel != null)
-				return false;
-		} else if (!vel.equals(other.vel))
-			return false;
-		return true;
+		return Objects.equals(pos, other.pos) &&
+				Objects.equals(vel, other.vel);
 	}
 
 	@Override

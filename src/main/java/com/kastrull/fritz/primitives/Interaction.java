@@ -1,5 +1,7 @@
 package com.kastrull.fritz.primitives;
 
+import java.util.Objects;
+
 public class Interaction implements Approx<Interaction> {
 
 	public final Particle p1;
@@ -16,33 +18,18 @@ public class Interaction implements Approx<Interaction> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((p1 == null) ? 0 : p1.hashCode());
-		result = prime * result + ((p2 == null) ? 0 : p2.hashCode());
-		return result;
+		return Objects.hash(p1, p2);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Interaction other = (Interaction) obj;
-		if (p1 == null) {
-			if (other.p1 != null)
-				return false;
-		} else if (!p1.equals(other.p1))
-			return false;
-		if (p2 == null) {
-			if (other.p2 != null)
-				return false;
-		} else if (!p2.equals(other.p2))
-			return false;
-		return true;
+		return Objects.equals(p1, other.p1) &&
+				Objects.equals(p2, other.p2);
 	}
 
 	@Override

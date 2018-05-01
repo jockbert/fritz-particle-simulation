@@ -1,5 +1,7 @@
 package com.kastrull.fritz.primitives;
 
+import java.util.Objects;
+
 public class Border {
 
 	/** Vertical wall, if x-axis is horizontal. */
@@ -22,27 +24,18 @@ public class Border {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(at);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + (byX ? 1231 : 1237);
-		return result;
+		return Objects.hash(at, byX);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Border other = (Border) obj;
-		if (Double.doubleToLongBits(at) != Double.doubleToLongBits(other.at))
-			return false;
-		return byX == other.byX;
+		return Objects.equals(at, other.at) &&
+				byX == other.byX;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.kastrull.fritz.primitives;
 
+import java.util.Objects;
+
 import com.kastrull.fritz.Laws;
 
 public final class Coord implements Approx<Coord> {
@@ -27,28 +29,18 @@ public final class Coord implements Approx<Coord> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(x);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(y);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		return result;
+		return Objects.hash(x, y);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (obj == null || getClass() != obj.getClass())
 			return false;
 		Coord other = (Coord) obj;
-		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
-			return false;
-		return Double.doubleToLongBits(y) == Double.doubleToLongBits(other.y);
+		return Objects.equals(x, other.x) &&
+				Objects.equals(y, other.y);
 	}
 
 	@Override
