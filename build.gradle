@@ -35,3 +35,15 @@ dependencies {
     testCompile 'junit:junit:+'
     testCompile 'org.quicktheories:quicktheories:0.2+'
 }
+
+
+test {
+    testLogging {
+		events(
+			//"passed",
+			"skipped",
+			"failed"
+		)
+		exceptionFormat = 'full'
+    }
+}
