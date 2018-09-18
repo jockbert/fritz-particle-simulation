@@ -32,7 +32,6 @@ public interface SimState {
 	 * Downcast to enable mutation or copy data into new
 	 * {@link ImmutableSimState}.
 	 */
-	@Value.Auxiliary
 	static ImmutableSimState mut(SimState ss) {
 		if (ss instanceof ImmutableSimState)
 			return (ImmutableSimState) ss;
@@ -64,5 +63,4 @@ public interface SimState {
 	default double currentTime() {
 		return 0.0;
 	}
-
 }
