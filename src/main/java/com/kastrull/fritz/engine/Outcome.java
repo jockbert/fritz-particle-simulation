@@ -8,22 +8,22 @@ import org.immutables.value.Value;
 /** The outcome of an executed {@link Event} in {@link EventEngine}. */
 @Value.Immutable(builder = false)
 @Value.Style(allMandatoryParameters = true, defaultAsDefault = true, with = "")
-public interface Outcome<R> {
+public interface Outcome<I, R> {
 
 	double time();
 
 	R result();
 
-	default Set<Integer> involves() {
+	default Set<I> involves() {
 		return Collections.emptySet();
 	}
 
-	default Set<Integer> invalidates() {
+	default Set<I> invalidates() {
 		return Collections.emptySet();
 	}
 
 	/** Creation convenience. */
-	static <R2> ImmutableOutcome<R2> of(double atTime, R2 value) {
-		return ImmutableOutcome.<R2>of(atTime, value);
+	static <I2, R2> ImmutableOutcome<I2, R2> of(double atTime, R2 value) {
+		return ImmutableOutcome.<I2, R2>of(atTime, value);
 	}
 }

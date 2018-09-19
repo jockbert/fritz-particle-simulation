@@ -12,17 +12,17 @@ import org.immutables.value.Value;
  */
 @Value.Immutable(builder = false)
 @Value.Style(allMandatoryParameters = true, defaultAsDefault = true, with = "")
-public interface Event<R> {
+public interface Event<I, R> {
 	double time();
 
 	R result();
 
-	default Set<Integer> involving() {
+	default Set<I> involving() {
 		return Collections.emptySet();
 	}
 
 	/** Creation convenience. */
-	static <R2> ImmutableEvent<R2> of(double atTime, R2 result) {
-		return ImmutableEvent.<R2>of(atTime, result);
+	static <I2, R2> ImmutableEvent<I2, R2> of(double atTime, R2 result) {
+		return ImmutableEvent.<I2, R2>of(atTime, result);
 	}
 }

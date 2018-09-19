@@ -28,22 +28,26 @@ import java.util.Iterator;
  * to item I1 via event E5. For simplicity also event E3 is invalidated, despite
  * occurring before E5. I8 is indirectly related to I1 via events E5 and E7.
  */
-public interface EventEngine<R> extends
-		Iterator<Outcome<R>>,
-		Iterable<Outcome<R>> {
+public interface EventEngine<I, R> extends
+		Iterator<Outcome<I, R>>,
+		Iterable<Outcome<I, R>> {
 
-	static <S> EventEngine<S> create() {
-		return new BasicEventEngine<S>();
+	static <J, S> EventEngine<J, S> create() {
+		return new BasicEventEngine<J, S>();
 	}
 
-	void addEvent(Event<R> event);
+	void addEvent(Event<I, R> event);
 
-	default void addEvent(double time, R result, int... involving) {
-		addEvent(Event.of(time, result).involving(involving));
+	default void addEvent(
+			double time,
+			R result,
+			@SuppressWarnings("unchecked")
+			I... involving) {
+		addEvent(Event.<I, R>of(time, result).involving(involving));
 	}
 
 	@Override
-	default Iterator<Outcome<R>> iterator() {
+	default Iterator<Outcome<I, R>> iterator() {
 		return this;
 	}
 }

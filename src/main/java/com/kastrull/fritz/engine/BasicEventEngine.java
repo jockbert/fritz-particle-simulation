@@ -9,13 +9,13 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class BasicEventEngine<T> implements EventEngine<T> {
+public class BasicEventEngine<I, R> implements EventEngine<I, R> {
 
-	private static Comparator<Event<?>> ORDER_BY_TIME = (o1, o2) -> Double
+	private static Comparator<Event<?, ?>> ORDER_BY_TIME = (o1, o2) -> Double
 		.valueOf(o1.time())
 		.compareTo(o2.time());
 
-	Queue<Event<T>> queue = new PriorityQueue<>(ORDER_BY_TIME);
+	Queue<Event<I, R>> queue = new PriorityQueue<>(ORDER_BY_TIME);
 
 	@Override
 	public boolean hasNext() {
@@ -23,30 +23,30 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 	}
 
 	@Override
-	public Outcome<T> next() {
-		Event<T> event = queue.poll();
+	public Outcome<I, R> next() {
+		Event<I, R> event = queue.poll();
 
 		double time = event.time();
-		T result = event.result();
-		Set<Integer> involving = event.involving();
-		Set<Integer> invalidated = recursivelyFindInvalidated(involving);
+		R result = event.result();
+		Set<I> involving = event.involving();
+		Set<I> invalidated = recursivelyFindInvalidated(involving);
 
 		return Outcome
-			.of(time, result)
+			.<I, R>of(time, result)
 			.involves(involving)
 			.invalidates(invalidated);
 	}
 
-	private Set<Integer> recursivelyFindInvalidated(Set<Integer> involving) {
+	private Set<I> recursivelyFindInvalidated(Set<I> involving) {
 		if (involving.isEmpty())
 			// recursion end criteria fulfilled
 			return Collections.emptySet();
 
-		List<Event<T>> invalidatedEvents = queue.stream()
+		List<Event<I, R>> invalidatedEvents = queue.stream()
 			.filter(isInvalidatedBy(involving))
 			.collect(Collectors.toList());
 
-		Set<Integer> invalidatedItems = invalidatedEvents.stream()
+		Set<I> invalidatedItems = invalidatedEvents.stream()
 			.flatMap(i -> i.involving().stream())
 			.collect(Collectors.toSet());
 
@@ -60,13 +60,13 @@ public class BasicEventEngine<T> implements EventEngine<T> {
 		return invalidatedItems;
 	}
 
-	public static <S> Predicate<Event<S>> isInvalidatedBy(Set<Integer> invalidators) {
+	public static <J, S> Predicate<Event<J, S>> isInvalidatedBy(Set<J> invalidators) {
 		return alpha -> invalidators.stream()
 			.anyMatch(i -> alpha.involving().contains(i));
 	}
 
 	@Override
-	public void addEvent(Event<T> event) {
+	public void addEvent(Event<I, R> event) {
 		queue.add(event);
 	}
 }

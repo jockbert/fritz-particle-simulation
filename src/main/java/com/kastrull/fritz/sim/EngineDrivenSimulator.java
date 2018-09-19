@@ -1,6 +1,8 @@
 package com.kastrull.fritz.sim;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.kastrull.fritz.engine.BasicEventEngine;
 import com.kastrull.fritz.engine.EventEngine;
@@ -16,9 +18,9 @@ public class EngineDrivenSimulator implements Simulator {
 
 	private Physics physics;
 
-	private EventEngine<EventAndAction> engine = new BasicEventEngine<>();
+	private EventEngine<SimParticle, EventAndAction> engine = new BasicEventEngine<>();
 
-	private Register particles;
+	private List<SimParticle> particles;
 
 	private SimState initialState;
 
@@ -32,7 +34,8 @@ public class EngineDrivenSimulator implements Simulator {
 	public SimState simulate(SimState state) {
 		initialState = state;
 
-		initRegister(state);
+		initParticles(state);
+
 		initWalls(state);
 
 		addSimulationEnd(state);
@@ -43,7 +46,7 @@ public class EngineDrivenSimulator implements Simulator {
 
 		Optional<Double> endTime = Optional.empty();
 
-		simloop: for (Outcome<EventAndAction> oc : engine) {
+		simloop: for (Outcome<SimParticle, EventAndAction> oc : engine) {
 
 			boolean isAfterSimEndTime = endTime.isPresent() && endTime.get() < oc.time();
 			if (isAfterSimEndTime)
@@ -68,9 +71,9 @@ public class EngineDrivenSimulator implements Simulator {
 
 				oc
 					.involves()
-					.forEach(pid -> {
-						addParticleHit(pid, oc.time());
-						addWallHit(pid, oc.time());
+					.forEach(p -> {
+						addParticleHit(p, oc.time());
+						addWallHit(p, oc.time());
 					});
 
 				break;
@@ -87,33 +90,31 @@ public class EngineDrivenSimulator implements Simulator {
 		state.walls();
 	}
 
-	private void initRegister(SimState state) {
-		particles = new Register(state.particles(), state.currentTime());
+	private void initParticles(SimState state) {
+		particles = state.particles().stream()
+			.map(p -> new SimParticle(p, state.currentTime()))
+			.collect(Collectors.toList());
 	}
 
 	private void addAllParticleHits(SimState state) {
-		particles.ids().forEach(pId -> addParticleHit(pId, state.currentTime()));
+		particles.forEach(p -> addParticleHit(p, state.currentTime()));
 	}
 
-	private void addParticleHit(Integer particleId, double currentTime) {
-		Particle particle = idToParticle(particleId, currentTime);
+	private void addParticleHit(SimParticle p, double currentTime) {
+		Particle particle = p.getAtTime(currentTime);
 
 		particles
-			.ids()
-			.filter(otherId -> otherId != particleId)
-			.forEach(otherParticleId -> {
-				Particle otherParticle = particles.getAtTime(otherParticleId, currentTime);
-
-				physics
-					.collisionTime(particle, otherParticle)
-					.ifPresent(hitTime -> engine
-						.addEvent(
-							currentTime + hitTime,
-							ena(
-								Event.PARTICLE_HIT,
-								particleHitAction(particleId, otherParticleId, currentTime + hitTime)),
-							particleId, otherParticleId));
-			});
+			.stream()
+			.filter(otherP -> otherP != p)
+			.forEach(otherP -> physics
+				.collisionTime(particle, otherP.getAtTime(currentTime))
+				.ifPresent(hitTime -> engine
+					.addEvent(
+						currentTime + hitTime,
+						ena(
+							Event.PARTICLE_HIT,
+							particleHitAction(p, otherP, currentTime + hitTime)),
+						p, otherP)));
 	}
 
 	private EventAndAction ena(Event e, Runnable a) {
@@ -121,31 +122,26 @@ public class EngineDrivenSimulator implements Simulator {
 	}
 
 	private Runnable particleHitAction(
-			Integer pId1,
-			Integer pId2,
+			SimParticle p1,
+			SimParticle p2,
 			double particleHitTime) {
 
 		return () -> {
-			Particle p1Before = idToParticle(pId1, particleHitTime);
-			Particle p2Before = idToParticle(pId2, particleHitTime);
+			Interaction i = physics.interact(
+				p1.getAtTime(particleHitTime),
+				p2.getAtTime(particleHitTime));
 
-			Interaction i = physics.interact(p1Before, p2Before);
-
-			// update changed particle after wall collisions
-			particles.particles.set(pId1, i.p1);
-			particles.particles.set(pId2, i.p2);
-
-			particles.times[pId1] = particleHitTime;
-			particles.times[pId2] = particleHitTime;
+			p1.modify(i.p1, particleHitTime);
+			p2.modify(i.p2, particleHitTime);
 		};
 	}
 
 	private void addAllWallHits(SimState state) {
-		particles.ids().forEach(pId -> addWallHit(pId, state.currentTime()));
+		particles.stream().forEach(p -> addWallHit(p, state.currentTime()));
 	}
 
-	private void addWallHit(Integer particleId, double currentTime) {
-		Particle particle = idToParticle(particleId, currentTime);
+	private void addWallHit(SimParticle p, double currentTime) {
+		Particle particle = p.getAtTime(currentTime);
 
 		initialState
 			.walls()
@@ -156,29 +152,20 @@ public class EngineDrivenSimulator implements Simulator {
 					.addEvent(
 						currentTime + hitTime,
 						ena(Event.WALL_HIT,
-							wallHitAction(particleId, wall, currentTime + hitTime)),
-						particleId)));
+							wallHitAction(p, wall, currentTime + hitTime)),
+						p)));
 	}
 
 	private Runnable wallHitAction(
-			final Integer particleId,
-			final Border wall,
-			final double wallHitTime) {
+			SimParticle p,
+			Border wall,
+			double wallHitTime) {
 
 		return () -> {
-			Particle particleBefore = idToParticle(particleId, wallHitTime);
-			WallInteraction wi = physics.interactWall(particleBefore, wall);
-
+			WallInteraction wi = physics.interactWall(p.getAtTime(wallHitTime), wall);
 			totalMomentum += wi.wallMomentum.distance();
-
-			// update changed particle after wall collisions
-			particles.particles.set(particleId, wi.p);
-			particles.times[particleId] = wallHitTime;
+			p.modify(wi.p, wallHitTime);
 		};
-	}
-
-	private Particle idToParticle(Integer particleId, double currentTime) {
-		return particles.getAtTime(particleId, currentTime);
 	}
 
 	private void addSimulationEnd(SimState state) {
@@ -194,7 +181,9 @@ public class EngineDrivenSimulator implements Simulator {
 		return SimState.mut(state)
 			.currentTime(state.targetTime())
 			.wallAbsorbedMomentum(totalMomentum)
-			.particles(particles.toList(state.targetTime()));
+			.particles(particles.stream()
+				.map(p -> p.getAtTime(state.targetTime()))
+				.collect(Collectors.toList()));
 	}
 }
 
